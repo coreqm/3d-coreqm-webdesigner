@@ -178,8 +178,8 @@ http://localhost:8080
 
 | Role | Access URL | Default Identifier | Initial Password |
 | :--- | :--- | :--- | :--- |
-| **Administrator** | `/admin/index.html` or `/login.html` | `admin@benimplaka.com` | `admin123` |
-| **Client Portal** | `/login.html` | `user@benimplaka.com` | `user123` |
+| **Administrator** | `/admin/index.html` or `/login.html` | `admin@test.com` | `admin123` |
+| **Client Portal** | `/login.html` | `user@test.com` | `user123` |
 
 > [!NOTE]
 > Upon initial login, plain-text passwords are automatically migrated and permanently replaced in local storage with salted SHA-256 cryptographic digests.

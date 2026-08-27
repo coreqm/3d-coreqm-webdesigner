@@ -95,7 +95,7 @@
       <form id="loginForm" class="space-y-4">
         <div>
           <label class="block text-xs font-mono text-zinc-300 uppercase mb-1.5" data-i18n="lblEmail">E-Posta veya Kullanıcı Adı</label>
-          <input type="text" id="email" required placeholder="admin@benimplaka.com" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500 font-mono">
+          <input type="text" id="email" required placeholder="admin@test.com" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500 font-mono">
         </div>
 
         <div>
@@ -212,7 +212,7 @@
       const mockSocialUser = {
         id: 99,
         username: provider.toLowerCase() + '_user',
-        email: `${provider.toLowerCase()}@benimplaka.com`,
+        email: `${provider.toLowerCase()}@test.com`,
         full_name: `${provider} Doğrulanmış Kullanıcı`,
         role: 'user'
       };

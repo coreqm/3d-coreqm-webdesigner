@@ -4,7 +4,7 @@ window.AdminHeader = {
     const container = document.getElementById('header-container');
     if (!container) return;
 
-    const user = Store.getUser() || { username: 'Admin', email: 'admin@benimplaka.com' };
+    const user = Store.getUser() || { username: 'Admin', email: 'admin@test.com' };
     const uName = user.full_name || user.username;
     const uInitial = uName.charAt(0).toUpperCase();
 

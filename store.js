@@ -95,12 +95,12 @@ const Store = {
     if (!localStorage.getItem('aether_mail_settings')) {
       const defaultMail = {
         provider: 'smtp',
-        smtp_host: 'mail.benimplaka.com',
+        smtp_host: 'mail.test.com',
         smtp_port: 587,
         smtp_encryption: 'tls',
-        smtp_user: 'noreply@benimplaka.com',
+        smtp_user: 'noreply@test.com',
         smtp_pass: '',
-        from_email: 'noreply@benimplaka.com',
+        from_email: 'noreply@test.com',
         from_name: '3D Coreqm Store',
         gmail_client_id: '',
         gmail_app_password: ''
@@ -205,7 +205,7 @@ const Store = {
         { 
           id: 1, 
           username: 'admin', 
-          email: 'admin@benimplaka.com', 
+          email: 'admin@test.com', 
           salt: 'c0reqm_salt_2026', 
           password_hash: '950fcf400b14bc269f24c8de8284b9a37114c1d70b6c96f8febb09c0f522a48e', 
           role: 'admin', 
@@ -214,7 +214,7 @@ const Store = {
         { 
           id: 2, 
           username: 'demo_user', 
-          email: 'user@benimplaka.com', 
+          email: 'user@test.com', 
           salt: 'c0reqm_salt_2026', 
           password_hash: 'cbc67d498cf01fca3641d91b77e0b984092eba0b2f29168d7c490be071e33458', 
           role: 'user', 
@@ -602,7 +602,24 @@ const Store = {
   // 8. Auth & Users (Güvenli Kriptografik Kullanıcı Katmanı)
   getUsers() {
     this.init();
-    return JSON.parse(localStorage.getItem('aether_users') || '[]');
+    let users = JSON.parse(localStorage.getItem('aether_users') || '[]');
+    let migrated = false;
+    users.forEach(u => {
+      if (u.email === 'admin@benimplaka.com') { u.email = 'admin@test.com'; migrated = true; }
+      if (u.email === 'user@benimplaka.com') { u.email = 'user@test.com'; migrated = true; }
+    });
+    if (migrated) {
+      localStorage.setItem('aether_users', JSON.stringify(users));
+      const cur = localStorage.getItem('aether_user');
+      if (cur) {
+        try {
+          let curU = JSON.parse(cur);
+          if (curU.email === 'admin@benimplaka.com') { curU.email = 'admin@test.com'; localStorage.setItem('aether_user', JSON.stringify(curU)); }
+          if (curU.email === 'user@benimplaka.com') { curU.email = 'user@test.com'; localStorage.setItem('aether_user', JSON.stringify(curU)); }
+        } catch(e) {}
+      }
+    }
+    return users;
   },
 
   sanitize(str) {
