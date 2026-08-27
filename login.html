@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Giriş Yap — 3D Coreqm</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Pure Client-Side Store -->
+  <script src="store.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; background-color: #060709; color: #f1f5f9; letter-spacing: -0.01em; }
+    .glass-panel {
+      background: rgba(12, 14, 18, 0.85);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 bg-[#060709] relative">
+  
+  <!-- Top Language & Home Switcher -->
+  <div class="absolute top-6 right-6 flex items-center gap-3">
+    <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-xl p-1 text-[11px] font-mono">
+      <button onclick="setAuthLang('tr')" id="langBtnTr" class="px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors">TR</button>
+      <button onclick="setAuthLang('en')" id="langBtnEn" class="px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors">EN</button>
+    </div>
+    <a href="/" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 transition-colors">
+      <i data-lucide="home" class="w-4 h-4"></i>
+    </a>
+  </div>
+
+  <div class="w-full max-w-md">
+    
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <a href="/" class="inline-flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center shadow-lg">
+          <span class="font-mono font-bold text-sm text-white">Æ</span>
+        </div>
+        <span class="font-bold text-lg tracking-wider text-white">3D<span class="text-zinc-400"> Coreqm</span></span>
+      </a>
+      <p class="text-xs text-zinc-400 mt-2 font-mono" data-i18n="tagline">Elit Otonom Sistemler & Lüks E-Ticaret</p>
+    </div>
+
+    <!-- Login Box -->
+    <div class="glass-panel p-8 rounded-3xl">
+      <h2 class="text-lg font-bold text-white mb-1" data-i18n="loginTitle">Hesabınıza Giriş Yapın</h2>
+      <p class="text-xs text-zinc-400 mb-6 font-light" data-i18n="loginDesc">Yönetici veya müşteri panelinize erişin.</p>
+
+      <!-- Sosyal Giriş Butonları (Google & Microsoft) -->
+      <div id="socialLoginContainer" class="space-y-2.5 mb-6">
+        <!-- Google Butonu -->
+        <button type="button" id="btnGoogleLogin" onclick="handleSocialLogin('Google')" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-100 text-neutral-900 font-medium text-xs flex items-center justify-center gap-3 transition-colors shadow-sm hidden">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>Google ile Giriş Yap</span>
+        </button>
+
+        <!-- Microsoft Butonu -->
+        <button type="button" id="btnMicrosoftLogin" onclick="handleSocialLogin('Microsoft')" class="w-full py-2.5 px-4 rounded-xl bg-[#2f2f2f] hover:bg-[#3f3f3f] text-white font-medium text-xs flex items-center justify-center gap-3 transition-colors shadow-sm border border-neutral-700 hidden">
+          <svg class="w-4 h-4" viewBox="0 0 23 23">
+            <path fill="#f35325" d="M1 1h10v10H1z"/>
+            <path fill="#81bc06" d="M12 1h10v10H12z"/>
+            <path fill="#05a6f0" d="M1 12h10v10H1z"/>
+            <path fill="#ffba08" d="M12 12h10v10H12z"/>
+          </svg>
+          <span>Microsoft ile Giriş Yap</span>
+        </button>
+
+        <div id="socialDivider" class="relative flex py-2 items-center hidden">
+          <div class="flex-grow border-t border-zinc-800"></div>
+          <span class="flex-shrink mx-4 text-[10px] font-mono text-zinc-500 uppercase">veya e-posta ile</span>
+          <div class="flex-grow border-t border-zinc-800"></div>
+        </div>
+      </div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-zinc-300 uppercase mb-1.5" data-i18n="lblEmail">E-Posta veya Kullanıcı Adı</label>
+          <input type="text" id="email" required placeholder="admin@benimplaka.com" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500 font-mono">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-zinc-300 uppercase mb-1.5" data-i18n="lblPassword">Şifre</label>
+          <input type="password" id="password" required placeholder="••••••••" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500 font-mono">
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-zinc-700 hover:bg-zinc-600 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-lg mt-2" data-i18n="btnSignIn">
+          Giriş Yap
+        </button>
+      </form>
+
+      <div class="text-center mt-6 text-xs text-zinc-400 font-light">
+        <span data-i18n="noAccount">Hesabınız yok mu?</span> <a href="/register.html" class="text-white hover:underline font-semibold" data-i18n="registerLink">Kayıt Olun</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2FA Doğrulama Modalı -->
+  <div id="twoFactorModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#12141a] border border-zinc-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
+        <i data-lucide="shield-alert" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-white">2FA Doğrulama Kodu</h3>
+        <p class="text-xs text-zinc-400 mt-1">Lütfen Authenticator uygulamanızdaki veya e-postanıza gönderilen 6 haneli kodu girin.</p>
+      </div>
+
+      <input type="text" id="two_factor_code_input" maxlength="6" placeholder="000000" class="w-full text-center tracking-[0.4em] font-mono text-xl py-3 rounded-xl bg-[#101217] border border-zinc-700 text-white outline-none focus:border-emerald-500">
+
+      <button type="button" onclick="verify2FA()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-lg">
+        Doğrula ve Giriş Yap
+      </button>
+      <button type="button" onclick="close2FAModal()" class="text-xs text-zinc-500 hover:text-zinc-300">
+        İptal
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const authI18n = {
+      tr: {
+        tagline: "Elit Otonom Sistemler & Lüks E-Ticaret",
+        loginTitle: "Hesabınıza Giriş Yapın",
+        loginDesc: "Yönetici veya müşteri panelinize erişin.",
+        lblEmail: "E-Posta veya Kullanıcı Adı",
+        lblPassword: "Şifre",
+        btnSignIn: "Giriş Yap",
+        noAccount: "Hesabınız yok mu?",
+        registerLink: "Kayıt Olun"
+      },
+      en: {
+        tagline: "Elite Autonomous Systems & Luxury Store",
+        loginTitle: "Sign in to your Account",
+        loginDesc: "Access your administrative or client portal.",
+        lblEmail: "Email or Username",
+        lblPassword: "Password",
+        btnSignIn: "Sign In",
+        noAccount: "Don't have an account?",
+        registerLink: "Sign Up"
+      }
+    };
+
+    let authLang = localStorage.getItem('aether_lang') || 'tr';
+
+    function setAuthLang(lang) {
+      authLang = lang;
+      localStorage.setItem('aether_lang', lang);
+      document.documentElement.lang = lang;
+
+      const t = authI18n[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+      });
+
+      const btnTr = document.getElementById('langBtnTr');
+      const btnEn = document.getElementById('langBtnEn');
+      if (lang === 'tr') {
+        btnTr.className = 'px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors';
+        btnEn.className = 'px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors';
+      } else {
+        btnEn.className = 'px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors';
+        btnTr.className = 'px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors';
+      }
+    }
+
+    lucide.createIcons();
+
+    // Dinamik Sosyal Girişleri Yükle (Admin ayarına bağlı)
+    function initSocialLogins() {
+      const authSettings = Store.getAuthSettings();
+      let hasSocial = false;
+
+      if (authSettings.google_login_enabled) {
+        document.getElementById('btnGoogleLogin')?.classList.remove('hidden');
+        hasSocial = true;
+      }
+      if (authSettings.microsoft_login_enabled) {
+        document.getElementById('btnMicrosoftLogin')?.classList.remove('hidden');
+        hasSocial = true;
+      }
+      if (hasSocial) {
+        document.getElementById('socialDivider')?.classList.remove('hidden');
+      }
+    }
+
+    let pendingUser = null;
+
+    function handleSocialLogin(provider) {
+      alert(`${provider} ile güvenli OAuth2 bağlantısı kuruluyor...`);
+      // Simüle edilen başarılı OAuth kullanıcı girişi
+      const mockSocialUser = {
+        id: 99,
+        username: provider.toLowerCase() + '_user',
+        email: `${provider.toLowerCase()}@benimplaka.com`,
+        full_name: `${provider} Doğrulanmış Kullanıcı`,
+        role: 'user'
+      };
+
+      const authSettings = Store.getAuthSettings();
+      if (authSettings.two_factor_enabled) {
+        pendingUser = mockSocialUser;
+        open2FAModal();
+      } else {
+        localStorage.setItem('aether_user', JSON.stringify(mockSocialUser));
+        localStorage.setItem('aether_token', 'token_' + mockSocialUser.id);
+        window.location.href = '/profile.html';
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const res = Store.login(email, password);
+      if (res.success) {
+        const authSettings = Store.getAuthSettings();
+        if (authSettings.two_factor_enabled) {
+          pendingUser = res.user;
+          open2FAModal();
+        } else {
+          redirectAfterLogin(res.user);
+        }
+      } else {
+        alert(res.error || 'Giriş başarısız.');
+      }
+    });
+
+    function redirectAfterLogin(user) {
+      if (user.role === 'admin') {
+        window.location.href = '/admin/index.html';
+      } else {
+        window.location.href = '/profile.html';
+      }
+    }
+
+    function open2FAModal() {
+      document.getElementById('twoFactorModal').classList.remove('hidden');
+      document.getElementById('two_factor_code_input').value = '';
+      document.getElementById('two_factor_code_input').focus();
+    }
+
+    function close2FAModal() {
+      document.getElementById('twoFactorModal').classList.add('hidden');
+      pendingUser = null;
+    }
+
+    function verify2FA() {
+      const code = document.getElementById('two_factor_code_input').value.trim();
+      if (code.length === 6 && /^\d+$/.test(code)) {
+        if (pendingUser) {
+          localStorage.setItem('aether_user', JSON.stringify(pendingUser));
+          localStorage.setItem('aether_token', 'token_' + pendingUser.id);
+          redirectAfterLogin(pendingUser);
+        }
+      } else {
+        alert('Lütfen geçerli 6 haneli bir doğrulama kodu giriniz (Örn: 123456).');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setAuthLang(authLang);
+      initSocialLogins();
+    });
+  </script>
+</body>
+</html>

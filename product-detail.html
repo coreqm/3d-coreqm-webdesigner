@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Ürün Detayı — 3D Coreqm</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Pure Client-Side Store -->
+  <script src="store.js"></script>
+  <script src="checkout.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; background-color: #060709; color: #f1f5f9; letter-spacing: -0.01em; }
+    .glass-panel {
+      background: rgba(12, 14, 18, 0.85);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#060709] text-slate-200 flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-[#090b10]/90 backdrop-blur-xl border-b border-zinc-800 px-6 py-3.5" id="navHeader">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
+          <span class="font-mono font-bold text-xs text-white">Æ</span>
+        </div>
+        <span class="font-bold text-sm tracking-wider text-white">3D<span class="text-zinc-400"> Coreqm</span></span>
+      </a>
+
+      <div class="flex items-center gap-4">
+        <!-- Dil Butonları -->
+        <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-xl p-1 text-[11px] font-mono">
+          <button onclick="setDetailLang('tr')" id="langBtnTr" class="px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors">TR</button>
+          <button onclick="setDetailLang('en')" id="langBtnEn" class="px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors">EN</button>
+        </div>
+
+        <a href="/" class="text-xs text-zinc-400 hover:text-white transition-colors" data-i18n="backToShop">← Tüm Ürünler</a>
+        <button id="cartHeaderBtn" onclick="toggleCartDrawer()" class="relative px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-mono text-zinc-300 flex items-center gap-2">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span id="cartCountBadge" class="px-1.5 py-0.2 rounded-full bg-zinc-600 text-[10px] text-white">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Product Detail Section -->
+  <main class="max-w-7xl mx-auto pt-24 pb-16 px-6 flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      
+      <!-- Left: Interactive 360 Canvas or Image -->
+      <div class="glass-panel rounded-3xl p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[480px]">
+        <div id="canvasContainer" class="w-full h-96 flex items-center justify-center relative cursor-grab active:cursor-grabbing">
+          <canvas id="productCanvas" class="w-full h-full object-contain"></canvas>
+          <img id="fallbackImg" class="hidden max-h-80 object-contain mx-auto" src="">
+        </div>
+        <div id="interactiveBadge" class="mt-4 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-700 text-[11px] font-mono text-zinc-400 flex items-center gap-2">
+          <i data-lucide="move" class="w-3.5 h-3.5"></i>
+          <span data-i18n="dragHint">Fareyle basılı tutup sağa-sola sürükleyerek 360° inceleyin</span>
+        </div>
+      </div>
+
+      <!-- Right: Product Info & Order -->
+      <div class="space-y-6">
+        <div>
+          <span class="text-xs font-mono text-zinc-400 uppercase tracking-widest" id="prodCategory">Kategori</span>
+          <h1 class="text-3xl sm:text-4xl font-bold text-white mt-1" id="prodTitle">Ürün Yükleniyor...</h1>
+          <div class="flex items-center gap-3 mt-4">
+            <span class="text-3xl font-bold text-white font-mono" id="prodPrice">$0</span>
+            <span class="text-lg text-zinc-500 line-through font-mono" id="prodOldPrice"></span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono" id="stockStatus" data-i18n="inStock">Stokta Var</span>
+          </div>
+        </div>
+
+        <p class="text-sm text-zinc-400 leading-relaxed font-light" id="prodDescription">
+          Açıklama yükleniyor...
+        </p>
+
+        <!-- Quantity & Add to Cart (E-Ticaret Açıkken) -->
+        <div id="purchaseBlock" class="flex items-center gap-4 pt-4 border-t border-zinc-800">
+          <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-xl px-3 py-2">
+            <button onclick="changeQty(-1)" class="text-zinc-400 hover:text-white px-2 font-mono text-sm">-</button>
+            <span id="qtyDisplay" class="px-4 font-mono text-sm text-white font-bold">1</span>
+            <button onclick="changeQty(1)" class="text-zinc-400 hover:text-white px-2 font-mono text-sm">+</button>
+          </div>
+
+          <button onclick="addToCartCurrent()" class="flex-1 py-3.5 rounded-xl bg-zinc-700 hover:bg-zinc-600 font-bold text-xs uppercase tracking-wider text-white flex items-center justify-center gap-2 transition-colors shadow-lg">
+            <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+            <span data-i18n="addToCart">Sepete Ekle</span>
+          </button>
+        </div>
+
+        <!-- E-Ticaret Kapalıysa Gösterilen Kurumsal İletişim Butonu -->
+        <div id="catalogContactBlock" class="hidden pt-4 border-t border-zinc-800">
+          <a href="/#mapSection" class="w-full py-3.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 font-bold text-xs uppercase tracking-wider text-white flex items-center justify-center gap-2 transition-colors shadow-lg">
+            <i data-lucide="mail" class="w-4 h-4 text-zinc-400"></i>
+            <span data-i18n="catalogContactBtn">Showroom & Kurumsal Teklif Al</span>
+          </a>
+        </div>
+
+        <!-- Tech Specifications Table -->
+        <div class="pt-6 border-t border-zinc-800">
+          <h3 class="text-xs font-mono text-zinc-400 uppercase tracking-wider mb-3" data-i18n="specsTitle">Teknik Özellikler</h3>
+          <div id="specsContainer" class="space-y-2 text-xs font-mono">
+            <!-- Dinamik doldurulur -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= ULTRA PROFESYONEL KURUMSAL FOOTER ================= -->
+  <footer class="border-t border-zinc-800 bg-[#050608] text-zinc-400 text-xs">
+    <div class="py-12 px-6 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center">
+          <span class="text-xs font-bold font-mono text-white">Æ</span>
+        </div>
+        <span class="font-bold text-sm tracking-wider text-white">3D<span class="text-zinc-500"> Coreqm</span></span>
+        <span class="text-[11px] font-mono text-zinc-500 ml-4 hidden sm:inline" data-i18n="allRights">© 2026 Tüm hakları saklıdır.</span>
+      </div>
+
+      <div class="flex items-center gap-6 text-xs text-zinc-400">
+        <a href="/" class="hover:text-white transition-colors" data-i18n="store">Mağaza</a>
+        <a href="/admin.html" class="hover:text-emerald-400 transition-colors" data-i18n="adminPanel">Yönetici Paneli</a>
+        <a href="/profile.html" class="hover:text-white transition-colors" data-i18n="myProfile">Hesabım</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart Slide-Over Drawer -->
+  <div id="cartDrawer" class="hidden fixed inset-0 z-50 overflow-hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="toggleCartDrawer()"></div>
+    <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+      <div class="w-screen max-w-md bg-[#0c0e12] border-l border-zinc-800 p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between pb-4 border-b border-zinc-800">
+            <h2 class="text-base font-bold text-white" data-i18n="cartTitle">Alışveriş Sepetiniz</h2>
+            <button onclick="toggleCartDrawer()" class="text-zinc-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+          </div>
+          <div id="cartItemsList" class="py-4 space-y-3 overflow-y-auto max-h-[60vh]">
+            <!-- Dinamik ürünler -->
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-zinc-800 space-y-4">
+          <div class="flex justify-between items-center text-sm font-bold text-white font-mono">
+            <span data-i18n="cartTotalLabel">Toplam:</span>
+            <span id="cartTotalSum">$0</span>
+          </div>
+          <button onclick="checkoutCart()" class="w-full py-3.5 rounded-xl bg-zinc-700 hover:bg-zinc-600 text-white font-bold text-xs uppercase tracking-wider" data-i18n="cartCheckoutBtn">
+            Siparişi Tamamla
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const detailTranslations = {
+      tr: {
+        backToShop: "← Tüm Ürünler",
+        dragHint: "Fareyle basılı tutup sağa-sola sürükleyerek 360° inceleyin",
+        inStock: "Stokta Var",
+        addToCart: "Sepete Ekle",
+        specsTitle: "Teknik Özellikler",
+        catalogContactBtn: "Showroom & Kurumsal Teklif Al",
+        store: "Mağaza",
+        adminPanel: "Yönetici Paneli",
+        myProfile: "Hesabım",
+        allRights: "© 2026 Tüm hakları saklıdır.",
+        cartTitle: "Alışveriş Sepetiniz",
+        cartTotalLabel: "Toplam:",
+        cartCheckoutBtn: "Siparişi Tamamla",
+        emptyCart: "Sepetiniz boş.",
+        orderSuccess: "🎉 Siparişiniz başarıyla alındı! Sipariş No: #",
+        promptName: "Sipariş için Adınız Soyadınız:",
+        promptEmail: "E-posta Adresiniz:",
+        promptAddress: "Teslimat Adresiniz:"
+      },
+      en: {
+        backToShop: "← Back to Store",
+        dragHint: "Click & drag left-to-right to inspect in 360°",
+        inStock: "In Stock",
+        addToCart: "Add to Cart",
+        specsTitle: "Technical Specifications",
+        catalogContactBtn: "Request Corporate Quote & Showroom",
+        store: "Store",
+        adminPanel: "Admin Panel",
+        myProfile: "My Account",
+        allRights: "© 2026 All rights reserved.",
+        cartTitle: "Your Shopping Cart",
+        cartTotalLabel: "Total:",
+        cartCheckoutBtn: "Complete Order",
+        emptyCart: "Your cart is empty.",
+        orderSuccess: "🎉 Order placed successfully! Order ID: #",
+        promptName: "Full Name for Order:",
+        promptEmail: "Email Address:",
+        promptAddress: "Shipping Address:"
+      }
+    };
+
+    let detailLang = localStorage.getItem('aether_lang') || 'tr';
+
+    function setDetailLang(lang) {
+      detailLang = lang;
+      localStorage.setItem('aether_lang', lang);
+      document.documentElement.lang = lang;
+
+      const t = detailTranslations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+      });
+
+      const btnTr = document.getElementById('langBtnTr');
+      const btnEn = document.getElementById('langBtnEn');
+      if (lang === 'tr') {
+        btnTr.className = 'px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors';
+        btnEn.className = 'px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors';
+      } else {
+        btnEn.className = 'px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors';
+        btnTr.className = 'px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors';
+      }
+    }
+
+    lucide.createIcons();
+
+    let productData = null;
+    let selectedQty = 1;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const prodId = urlParams.get('id') || 1;
+
+    function loadProduct() {
+      productData = Store.getProductById(prodId);
+      if (!productData) {
+        document.getElementById('prodTitle').textContent = 'Ürün bulunamadı.';
+        return;
+      }
+
+      document.getElementById('prodTitle').textContent = productData.title;
+      document.getElementById('prodCategory').textContent = productData.category;
+      document.getElementById('prodPrice').textContent = '$' + productData.price;
+      if (productData.old_price) {
+        document.getElementById('prodOldPrice').textContent = '$' + productData.old_price;
+      }
+      document.getElementById('prodDescription').textContent = productData.description;
+
+      // Specs
+      const specs = typeof productData.specs_json === 'string' ? JSON.parse(productData.specs_json || '[]') : (productData.specs_json || []);
+      document.getElementById('specsContainer').innerHTML = specs.map(s => `
+        <div class="flex justify-between py-1.5 border-b border-zinc-800/40">
+          <span class="text-zinc-400">${s.label}</span>
+          <span class="text-white">${s.value}</span>
+        </div>
+      `).join('');
+
+      // 3D Canvas
+      if (productData.frames_folder) {
+        initProduct3D(productData.frames_folder, productData.frames_count || 240);
+      } else {
+        document.getElementById('productCanvas').classList.add('hidden');
+        document.getElementById('interactiveBadge').classList.add('hidden');
+        const fallback = document.getElementById('fallbackImg');
+        fallback.src = productData.image_url;
+        fallback.classList.remove('hidden');
+      }
+
+      updateCartBadge();
+    }
+
+    // 360° Canvas Engine for Product
+    function initProduct3D(folder, totalFrames) {
+      const canvas = document.getElementById('productCanvas');
+      const ctx = canvas.getContext('2d');
+      const container = document.getElementById('canvasContainer');
+      const images = [];
+
+      function getPath(i) {
+        const num = (i + 1).toString().padStart(4, '0');
+        return `${folder}/frame_${num}.webp`;
+      }
+
+      for (let i = 0; i < totalFrames; i++) {
+        const img = new Image();
+        img.src = getPath(i);
+        if (i === 0) {
+          img.onload = () => {
+            canvas.width = container.clientWidth * window.devicePixelRatio;
+            canvas.height = container.clientHeight * window.devicePixelRatio;
+            drawFrame(0);
+          };
+        }
+        images.push(img);
+      }
+
+      let currentFrame = 0;
+      function drawFrame(idx) {
+        const img = images[idx];
+        if (!img || !img.complete) return;
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const r = Math.min(cw / img.naturalWidth, ch / img.naturalHeight);
+        const nw = img.naturalWidth * r;
+        const nh = img.naturalHeight * r;
+        ctx.clearRect(0, 0, cw, ch);
+        ctx.drawImage(img, (cw - nw) / 2, (ch - nh) / 2, nw, nh);
+      }
+
+      let isDragging = false;
+      let startX = 0;
+
+      container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const delta = e.clientX - startX;
+        if (Math.abs(delta) > 5) {
+          const step = delta > 0 ? 1 : -1;
+          currentFrame = (currentFrame + step + totalFrames) % totalFrames;
+          drawFrame(currentFrame);
+          startX = e.clientX;
+        }
+      });
+
+      window.addEventListener('mouseup', () => isDragging = false);
+    }
+
+    function changeQty(n) {
+      selectedQty = Math.max(1, selectedQty + n);
+      document.getElementById('qtyDisplay').textContent = selectedQty;
+    }
+
+    function checkEcommerceMode() {
+      const isEcom = Store.getSettings().ecommerce_enabled !== 0;
+      const cartBtn = document.getElementById('cartHeaderBtn');
+      const purchaseBlock = document.getElementById('purchaseBlock');
+      const contactBlock = document.getElementById('catalogContactBlock');
+
+      if (cartBtn) {
+        if (!isEcom) cartBtn.classList.add('hidden');
+        else cartBtn.classList.remove('hidden');
+      }
+
+      if (!isEcom) {
+        if (purchaseBlock) purchaseBlock.classList.add('hidden');
+        if (contactBlock) contactBlock.classList.remove('hidden');
+      } else {
+        if (purchaseBlock) purchaseBlock.classList.remove('hidden');
+        if (contactBlock) contactBlock.classList.add('hidden');
+      }
+    }
+
+    function addToCartCurrent() {
+      if (Store.getSettings().ecommerce_enabled === 0) return;
+      if (!productData) return;
+      Store.addToCart(productData, selectedQty);
+      updateCartBadge();
+      toggleCartDrawer();
+    }
+
+    function updateCartBadge() {
+      const cart = Store.getCart();
+      const count = cart.reduce((s, i) => s + i.qty, 0);
+      document.getElementById('cartCountBadge').textContent = count;
+    }
+
+    function toggleCartDrawer() {
+      if (Store.getSettings().ecommerce_enabled === 0) return;
+      const drawer = document.getElementById('cartDrawer');
+      drawer.classList.toggle('hidden');
+      renderCartItems();
+      lucide.createIcons();
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById('cartItemsList');
+      const cart = Store.getCart();
+      const t = detailTranslations[detailLang];
+      if (cart.length === 0) {
+        container.innerHTML = `<div class="text-xs text-zinc-500 font-mono text-center py-6">${t.emptyCart}</div>`;
+        document.getElementById('cartTotalSum').textContent = '$0';
+        return;
+      }
+
+      let sum = 0;
+      container.innerHTML = cart.map((item, idx) => {
+        sum += item.price * item.qty;
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+            <div>
+              <div class="text-xs font-bold text-white">${item.title}</div>
+              <div class="text-[11px] font-mono text-zinc-400">$${item.price} x ${item.qty}</div>
+            </div>
+            <button onclick="removeFromCartIndex(${idx})" class="text-rose-400 hover:text-rose-300 text-xs font-mono">${detailLang === 'tr' ? 'Sil' : 'Remove'}</button>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('cartTotalSum').textContent = '$' + sum;
+    }
+
+    function removeFromCartIndex(idx) {
+      Store.removeFromCart(idx);
+      updateCartBadge();
+      renderCartItems();
+    }
+
+    function checkoutCart() {
+      const cart = Store.getCart();
+      const t = detailTranslations[detailLang];
+      if (cart.length === 0) return alert(t.emptyCart);
+      const name = prompt(t.promptName);
+      if (!name) return;
+      const email = prompt(t.promptEmail);
+      if (!email) return;
+      const address = prompt(t.promptAddress);
+
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+      const user = Store.getUser();
+
+      const newOrder = Store.createOrder({
+        user_id: user ? user.id : null,
+        customer_name: name,
+        customer_email: email,
+        customer_phone: '',
+        customer_address: address || '',
+        items_json: JSON.stringify(cart),
+        total_amount: total
+      });
+
+      alert(t.orderSuccess + newOrder.id);
+      Store.clearCart();
+      updateCartBadge();
+      toggleCartDrawer();
+    }
+
+    setDetailLang(detailLang);
+    checkEcommerceMode();
+    loadProduct();
+  </script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>3D Coreqm — Apple WebP Canvas Yöntemi</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #050608;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+
+    /* Glassmorphism */
+    .glass-panel {
+      background: rgba(12, 14, 18, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-pill {
+      background: rgba(12, 14, 18, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050608;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 9999px;
+    }
+
+    /* Scroll Container */
+    .video-scroll-container {
+      height: 350vh;
+      position: relative;
+    }
+
+    .video-sticky-box {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #050608;
+    }
+
+    /* 3D Canvas */
+    #threeDCanvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    .tilt-card {
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased bg-[#050608] text-slate-100 selection:bg-brand-500 selection:text-white">
+
+  <!-- ================= NAVBAR (ÜST HEADER MENÜSÜ) ================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-4 transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5 glass-panel rounded-2xl">
+      
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-accent to-white p-0.5 shadow-lg group-hover:scale-105 transition-transform">
+          <div class="w-full h-full bg-[#090b10] rounded-[9px] flex items-center justify-center">
+            <span class="text-xs font-bold font-mono text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-500">Æ</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm tracking-wider leading-none">AETHER<span class="text-brand-accent">.ONE</span></span>
+          <span class="text-[8px] font-mono text-emerald-400 uppercase tracking-widest mt-0.5">Apple WebP Sequence (240 Frames)</span>
+        </div>
+      </a>
+
+      <!-- Menü Linkleri -->
+      <nav class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest font-medium text-zinc-300">
+        <a href="#videoSection" class="hover:text-brand-accent transition-colors flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-accent animate-ping"></span>
+          3D Tur
+        </a>
+        <a href="#features" class="hover:text-brand-accent transition-colors">Özellikler</a>
+        <a href="#tech" class="hover:text-brand-accent transition-colors">Teknoloji</a>
+        <a href="#specs" class="hover:text-brand-accent transition-colors">Detaylar</a>
+      </nav>
+
+      <!-- Sağ Aksiyon Butonları -->
+      <div class="flex items-center gap-3">
+        <!-- Ses Efekti Butonu -->
+        <button id="soundToggle" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-pill text-xs font-mono text-zinc-400 hover:text-white transition-all">
+          <i data-lucide="volume-x" class="w-3.5 h-3.5" id="soundIcon"></i>
+          <span id="soundText">Ses: Kapalı</span>
+        </button>
+
+        <a href="#order" class="relative group overflow-hidden px-4 sm:px-5 py-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-accent text-black font-semibold text-xs tracking-wider uppercase transition-all shadow-lg hover:shadow-cyan-500/25 hover:scale-[1.02]">
+          <span class="relative z-10 flex items-center gap-1.5 font-bold">
+            Sipariş Ver
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ================= SECTION 1: APPLE WEBP CANVAS SCRUBBING ================= -->
+  <main>
+    <section id="videoSection" class="video-scroll-container">
+      <div class="video-sticky-box">
+        
+        <!-- Apple HTML5 Canvas (240 WebP Görseli ile Çizilir) -->
+        <canvas id="threeDCanvas"></canvas>
+
+        <!-- SADECE VE SADECE MİNİMAL İLERLEME ÇUBUĞU -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+          <div class="w-64 sm:w-96 h-1.5 bg-zinc-800/80 backdrop-blur-md rounded-full overflow-hidden p-0.5 border border-white/10 shadow-2xl">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-brand-accent via-cyan-400 to-white rounded-full w-0 transition-all duration-75"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 2: VİDEO BİTTİKTEN SONRAKİ SAYFA İÇERİĞİ ================= -->
+    <section id="features" class="relative z-30 py-32 px-6 max-w-6xl mx-auto border-t border-white/10 bg-[#050608]">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-white">
+          Apple WebP Image Sequence Yöntemi
+        </h2>
+        <p class="mt-4 text-zinc-400 font-light text-sm">
+          AirPods Pro ve iPhone sayfalarında kullanılan 120 FPS donanım hızlandırmalı görsel sekansı.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="tech">
+        <div class="p-8 rounded-3xl bg-white/[0.03] border border-white/10 tilt-card">
+          <div class="w-10 h-10 rounded-xl bg-brand-accent/10 border border-brand-accent/30 text-brand-accent flex items-center justify-center mb-6">
+            <i data-lucide="image" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">240 Adet Optimize WebP Karesi</h3>
+          <p class="text-zinc-400 text-sm font-light leading-relaxed">
+            Video yerine 240 adet hafif WebP görseli hafızaya alınır. Mouse hareket ettirildikçe ilgili kare 0.1 milisaniyede Canvas'a çizilir.
+          </p>
+        </div>
+
+        <div class="p-8 rounded-3xl bg-white/[0.03] border border-white/10 tilt-card" id="specs">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-6">
+            <i data-lucide="zap" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Mobil ve Düşük Güçte %100 Kusursuz</h3>
+          <p class="text-zinc-400 text-sm font-light leading-relaxed">
+            Video çözücüsü kullanılmadığı için telefonlarda pil tasarruf modunda bile asla takılmaz veya donmaz.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 3: SIPARIS ALANI ================= -->
+    <section id="order" class="py-24 px-6 max-w-4xl mx-auto text-center relative z-30">
+      <div class="glass-panel p-10 md:p-14 rounded-3xl relative overflow-hidden">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Hazır mısınız?</h2>
+        <p class="text-zinc-400 text-sm mb-8 max-w-lg mx-auto">
+          Tüm detaylar incelendi. Şimdi siparişinizi tamamlayabilirsiniz.
+        </p>
+        <button onclick="alert('Sipariş kaydedildi!')" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-brand-accent to-brand-500 text-black font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-transform">
+          Siparişi Tamamla
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-10 px-6 border-t border-white/5 text-center text-xs font-mono text-zinc-600 bg-[#040507]">
+    <span>© 2026 3D Coreqm — Apple WebP Image Sequence</span>
+  </footer>
+
+  <!-- ================= JAVASCRIPT: APPLE WEBP CANVAS MOTORU ================= -->
+  <script>
+    lucide.createIcons();
+
+    const canvas = document.getElementById('threeDCanvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const videoSection = document.getElementById('videoSection');
+    const progressBar = document.getElementById('progressBar');
+
+    // 240 WebP Karesi Ayarı
+    const TOTAL_FRAMES = 240;
+    const images = [];
+    let loadedCount = 0;
+
+    // Görsel Yol Üreteci (frames/frame_0001.webp -> frame_0240.webp)
+    function getFramePath(index) {
+      const num = (index + 1).toString().padStart(4, '0');
+      return `frames/frame_${num}.webp`;
+    }
+
+    // 1. AŞAMA: Tüm Kareleri Arka Planda Önceden Yükle (Preload)
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
+      img.src = getFramePath(i);
+      img.onload = () => {
+        loadedCount++;
+        if (i === 0) renderFrame(0); // İlk kare yüklenir yüklenmez ekrana bas
+      };
+      images.push(img);
+    }
+
+    // Canvas Boyutlandırma
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      renderFrame(currentProgress);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Canvas Üzerine Orantılı Çizim (Contain)
+    function drawImageProp(img) {
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+
+      const r = Math.min(cw / iw, ch / ih);
+      const nw = iw * r;
+      const nh = ih * r;
+      const cx = (cw - nw) / 2;
+      const cy = (ch - nh) / 2;
+
+      ctx.fillStyle = '#050608';
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.drawImage(img, cx, cy, nw, nh);
+    }
+
+    // Kare Çizici
+    function renderFrame(progress) {
+      const frameIndex = Math.min(
+        TOTAL_FRAMES - 1,
+        Math.max(0, Math.floor(progress * (TOTAL_FRAMES - 1)))
+      );
+      const targetImg = images[frameIndex];
+      if (targetImg && targetImg.complete) {
+        drawImageProp(targetImg);
+      }
+    }
+
+    // 2. AŞAMA: Scroll Hesaplaması
+    let targetProgress = 0;
+    let currentProgress = 0;
+    const lerpFactor = 0.30;
+
+    function onScroll() {
+      if (!videoSection) return;
+
+      const rect = videoSection.getBoundingClientRect();
+      const scrollableDist = videoSection.offsetHeight - window.innerHeight;
+      const currentScroll = -rect.top;
+
+      let progress = currentScroll / scrollableDist;
+      targetProgress = Math.max(0, Math.min(1, progress));
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // 3. AŞAMA: 60 - 120 FPS Render Döngüsü
+    function animLoop() {
+      const diff = targetProgress - currentProgress;
+      
+      if (Math.abs(diff) > 0.0005) {
+        currentProgress += diff * lerpFactor;
+        
+        if (progressBar) {
+          progressBar.style.width = (currentProgress * 100) + '%';
+        }
+
+        renderFrame(currentProgress);
+      }
+
+      requestAnimationFrame(animLoop);
+    }
+
+    // 4. AŞAMA: Ses Efekti (Web Audio API)
+    let audioCtx = null;
+    let isSoundOn = false;
+    let osc = null;
+    let gainNode = null;
+
+    const soundToggle = document.getElementById('soundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+    const soundText = document.getElementById('soundText');
+
+    soundToggle.addEventListener('click', () => {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      isSoundOn = !isSoundOn;
+
+      if (isSoundOn) {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        osc = audioCtx.createOscillator();
+        gainNode = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(55, audioCtx.currentTime);
+
+        gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.06, audioCtx.currentTime + 1);
+
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+
+        soundIcon.setAttribute('data-lucide', 'volume-2');
+        soundText.textContent = 'Ses: Açık';
+        soundToggle.classList.add('border-brand-accent/50', 'text-brand-accent');
+      } else {
+        if (gainNode) {
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+          setTimeout(() => {
+            if (osc) osc.stop();
+          }, 500);
+        }
+        soundIcon.setAttribute('data-lucide', 'volume-x');
+        soundText.textContent = 'Ses: Kapalı';
+        soundToggle.classList.remove('border-brand-accent/50', 'text-brand-accent');
+      }
+      lucide.createIcons();
+    });
+
+    // Başlat
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      onScroll();
+      requestAnimationFrame(animLoop);
+    });
+  </script>
+</body>
+</html>

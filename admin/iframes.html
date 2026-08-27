@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>360° Kare Setleri — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/frame.model.js"></script>
+  <script src="js/viewmodels/iframes.viewmodel.js?v=2.5"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">3D Canvas Setleri & Vitrin</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Video çözünürlükleri, 240 kare sekansı ve aktif 3D Canvas gösterim setleri.</p>
+          </div>
+          <button onclick="IframesViewModel.openNewModal()" class="px-5 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors self-start sm:self-auto">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>+ Yeni 3D Canvas Ekle</span>
+          </button>
+        </div>
+
+        <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 shadow-2xs overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-neutral-200/80 dark:border-zinc-800">
+                  <th class="py-4 pl-8 pr-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">ÖNİZLEME</th>
+                  <th class="py-4 px-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">BAŞLIK / 3D CANVAS KLASÖRÜ</th>
+                  <th class="py-4 px-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">KARE SAYISI</th>
+                  <th class="py-4 px-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500 text-center">DURUM</th>
+                  <th class="py-4 pl-4 pr-8 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500 text-right">İŞLEMLER</th>
+                </tr>
+              </thead>
+              <tbody id="iframesTableBody" class="divide-y divide-neutral-100 dark:divide-zinc-800/60">
+                <!-- Dinamik satırlar -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+
+      </div>
+  </div>
+
+  <!-- Video Upload & Frame Modal -->
+  <div id="frameModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-[#12141a] border border-neutral-200 dark:border-zinc-700 w-full max-w-xl rounded-3xl p-6 md:p-8 shadow-2xl max-h-[92vh] overflow-y-auto custom-scrollbar text-neutral-900 dark:text-white">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-neutral-100 dark:border-zinc-800 mb-6">
+        <div>
+          <span class="text-[10px] font-mono text-neutral-400 dark:text-zinc-500 uppercase tracking-widest">3D Canvas Motoru</span>
+          <h3 id="frameModalTitle" class="text-base font-bold text-neutral-900 dark:text-white mt-0.5">Video Yükle & 3D Canvas Alanı Oluştur</h3>
+        </div>
+        <button onclick="IframesViewModel.closeModal()" class="text-neutral-400 hover:text-neutral-900 dark:text-zinc-400 dark:hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="frameForm" class="space-y-5">
+        <input type="hidden" id="frame_id">
+
+        <!-- 1. VİDEO YÜKLEME VE OTOMATİK 240 KARE ÇÖZÜMLEME KUTUSU (SÜRÜKLE & BIRAK DESTEKLİ) -->
+        <div id="videoDropZone" 
+             ondragover="IframesViewModel.handleDragOver(event)" 
+             ondragleave="IframesViewModel.handleDragLeave(event)" 
+             ondrop="IframesViewModel.handleDrop(event)" 
+             onclick="document.getElementById('videoFileInput').click()"
+             class="p-6 rounded-2xl bg-neutral-50 dark:bg-zinc-900/90 border-2 border-dashed border-neutral-300 dark:border-zinc-700 hover:border-indigo-500 transition-all text-center relative cursor-pointer group">
+          <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/quicktime,video/ogg" class="hidden" onchange="IframesViewModel.handleVideoFileSelect(event)">
+          <div class="flex flex-col items-center justify-center space-y-2.5">
+            <div class="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm group-hover:scale-105 transition-transform">
+              <i data-lucide="upload-cloud" class="w-7 h-7"></i>
+            </div>
+            <div class="text-sm font-bold text-neutral-900 dark:text-white">Videoyu Buraya Sürükleyip Bırakın veya Tıklayın</div>
+            <p class="text-[11px] text-neutral-500 dark:text-zinc-400 font-light max-w-sm mx-auto">MP4, MOV veya WebM dosyası bıraktığınızda sistem otomatik olarak 240 WebP karesine dönüştürecektir.</p>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-200/80 dark:bg-zinc-800 text-[11px] font-mono text-neutral-700 dark:text-zinc-300">
+              <i data-lucide="video" class="w-3.5 h-3.5"></i>
+              <span>MP4 / MOV / WebM</span>
+            </div>
+          </div>
+
+          <!-- Canlı Dönüştürme İlerleme Çubuğu -->
+          <div id="videoExtractionProgress" class="hidden mt-5 space-y-2.5 text-left bg-white dark:bg-zinc-950/80 p-4 rounded-xl border border-neutral-200 dark:border-zinc-800" onclick="event.stopPropagation()">
+            <div class="flex justify-between text-xs font-mono text-neutral-800 dark:text-zinc-200">
+              <span id="extractStatusText" class="font-medium">Videodan 240 Kare Çözümleniyor...</span>
+              <span id="extractPercent" class="font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-neutral-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+              <div id="extractProgressBar" class="h-full bg-emerald-500 rounded-full w-0 transition-all duration-75"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 360 Canlı Önizleme (Varsa) -->
+        <div id="modalPreviewContainer" class="hidden p-4 rounded-2xl bg-neutral-100 dark:bg-black/60 border border-neutral-200 dark:border-zinc-800 text-center">
+          <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 block mb-2 font-semibold">✓ 3D Kareler Başarıyla Çözümlendi (360° Döndürerek Test Edin)</span>
+          <div class="w-full h-44 flex items-center justify-center relative cursor-grab active:cursor-grabbing" id="previewCanvasBox">
+            <canvas id="previewCanvas" class="w-full h-full object-contain"></canvas>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Vitrin Başlığı *</label>
+          <input type="text" id="frm_title" required placeholder="Örn: Titanyum Özel Seri" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none focus:border-indigo-500 font-sans">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">3D Canvas Kaynağı / Klasör *</label>
+            <input type="text" id="frm_folder" required value="frames" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none focus:border-indigo-500 font-mono">
+            <span class="text-[10px] text-neutral-400 dark:text-zinc-500 mt-1 block font-mono">Klasör: /frames/ veya 3D Canvas custom_...</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Kare Sayısı</label>
+            <input type="number" id="frm_count" required value="240" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none focus:border-indigo-500 font-mono">
+          </div>
+        </div>
+
+        <div>
+          <label class="flex items-center gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-zinc-900/60 border border-neutral-200 dark:border-zinc-800 cursor-pointer">
+            <input type="checkbox" id="frm_active" checked class="w-4 h-4 accent-indigo-600 rounded">
+            <div class="text-xs">
+              <span class="font-bold text-neutral-900 dark:text-white block">Anasayfa Ana Vitrini Olarak Ata</span>
+              <span class="text-[11px] text-neutral-500 dark:text-zinc-400 font-light">Anasayfanın 3D hero alanında doğrudan bu video kareleri gösterilir.</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-neutral-100 dark:border-zinc-800">
+          <button type="button" onclick="IframesViewModel.closeModal()" class="px-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-zinc-800 hover:bg-neutral-200 dark:hover:bg-zinc-700 text-neutral-700 dark:text-zinc-300 text-xs font-mono transition-colors">İptal</button>
+          <button type="submit" class="px-6 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-md">Vitrini Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      IframesViewModel.init();
+    });
+
+    // Doğrudan HTML çağırma fallback köprüsü
+    window.handleVideoFileSelect = function(e) {
+      if (window.IframesViewModel && typeof window.IframesViewModel.handleVideoFileSelect === 'function') {
+        window.IframesViewModel.handleVideoFileSelect(e);
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Genel Bakış — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/order.model.js"></script>
+  <script src="js/models/product.model.js"></script>
+  <script src="js/models/frame.model.js"></script>
+  <script src="js/models/settings.model.js"></script>
+
+  <script src="js/viewmodels/dashboard.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <!-- Shared Sidebar -->
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <!-- Shared Header -->
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <!-- Üst Başlık & Eylem -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Genel Bakış</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Sistem durumu, anlık siparişler ve performans istatistikleri.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="/admin/products.html" class="px-5 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Yeni Ürün Ekle</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4 Metrik Kartı -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-5 shadow-2xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <span class="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight" id="dashOrdersCount">0</span>
+              <span class="block text-xs font-medium text-neutral-500 dark:text-zinc-400 mt-0.5">Toplam Sipariş</span>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-5 shadow-2xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="dollar-sign" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <span class="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight font-mono" id="dashRevenue">$0</span>
+              <span class="block text-xs font-medium text-neutral-500 dark:text-zinc-400 mt-0.5">Toplam Gelir</span>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-5 shadow-2xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="package" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <span class="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight" id="dashProductsCount">0</span>
+              <span class="block text-xs font-medium text-neutral-500 dark:text-zinc-400 mt-0.5">Kayıtlı Ürün</span>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-5 shadow-2xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="layers" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <span class="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight" id="dashFramesCount">0</span>
+              <span class="block text-xs font-medium text-neutral-500 dark:text-zinc-400 mt-0.5">360° Kare Seti</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Son Siparişler Kartı -->
+        <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+            <h3 class="text-sm font-bold text-neutral-900 dark:text-white tracking-tight flex items-center gap-2">
+              <i data-lucide="clock" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+              <span>Son Siparişler</span>
+            </h3>
+            <a href="/admin/orders.html" class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+              Tümünü Yönet →
+            </a>
+          </div>
+          <div id="dashRecentOrdersList"></div>
+        </div>
+
+        <!-- Hızlı Kısayollar -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <a href="/admin/products.html" class="p-5 rounded-2xl bg-white dark:bg-[#12141a] border border-neutral-200/90 dark:border-zinc-800 hover:border-indigo-500 transition-colors shadow-2xs flex items-center gap-4 group">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="package" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs text-neutral-900 dark:text-white">Ürün Kataloğu</div>
+              <div class="text-[11px] text-neutral-500 dark:text-zinc-400">Fiyat ve stokları güncelle</div>
+            </div>
+          </a>
+
+          <a href="/admin/seo.html" class="p-5 rounded-2xl bg-white dark:bg-[#12141a] border border-neutral-200/90 dark:border-zinc-800 hover:border-indigo-500 transition-colors shadow-2xs flex items-center gap-4 group">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="globe" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs text-neutral-900 dark:text-white">SEO & Analitik</div>
+              <div class="text-[11px] text-neutral-500 dark:text-zinc-400">Google & Meta piksel ayarları</div>
+            </div>
+          </a>
+
+          <a href="/admin/header-design.html" class="p-5 rounded-2xl bg-white dark:bg-[#12141a] border border-neutral-200/90 dark:border-zinc-800 hover:border-indigo-500 transition-colors shadow-2xs flex items-center gap-4 group">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <i data-lucide="palette" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs text-neutral-900 dark:text-white">3D Hero & Tasarım</div>
+              <div class="text-[11px] text-neutral-500 dark:text-zinc-400">Canvas başlık ve butonları</div>
+            </div>
+          </a>
+        </div>
+
+      </main>
+
+      <!-- Shared Footer -->
+      <footer class="border-t border-neutral-200 dark:border-zinc-800/80 bg-white/50 dark:bg-[#090b10]/50 py-4 px-6 text-xs text-neutral-500 dark:text-zinc-400 flex flex-col sm:flex-row items-center justify-between gap-2 mt-auto">
+        <div>
+          © 2026 <strong class="text-neutral-700 dark:text-zinc-200">3D Coreqm</strong>. Tüm hakları saklıdır.
+        </div>
+        <div class="flex items-center gap-4 text-xs">
+          <a href="/" target="_blank" class="hover:text-neutral-900 dark:hover:text-white transition-colors">Mağaza</a>
+          <a href="/profile.html" class="hover:text-neutral-900 dark:hover:text-white transition-colors">Kullanıcı Portalı</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      DashboardViewModel.init();
+    });
+  </script>
+</body>
+</html>

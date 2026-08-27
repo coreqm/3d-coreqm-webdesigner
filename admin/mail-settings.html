@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>E-Posta & SMTP Ayarları — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/mail.model.js"></script>
+  <script src="js/viewmodels/mail-settings.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">E-Posta & SMTP Yapılandırması</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Sipariş bildirimleri, şifre sıfırlama ve sistem uyarıları için posta sunucusu.</p>
+          </div>
+          <button form="mailForm" type="submit" class="px-6 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors self-start sm:self-auto">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Ayarları Kaydet</span>
+          </button>
+        </div>
+
+        <form id="mailForm" class="space-y-6">
+
+          <!-- 1. SUNUCU & SAĞLAYICI SEÇİMİ -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              Posta Sunucusu & Sağlayıcı
+            </h3>
+
+            <div>
+              <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Gönderim Yöntemi / Sağlayıcı</label>
+              <select id="mail_provider" class="w-full max-w-md bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                <option value="smtp">Standart SMTP Sunucusu (cPanel, Postfix, SendGrid vb.)</option>
+                <option value="gmail">Gmail API / Google App Password (smtp.gmail.com)</option>
+              </select>
+            </div>
+
+            <!-- SMTP Alanları -->
+            <div id="smtpFieldsPanel" class="space-y-4 pt-2">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">SMTP Host (Sunucu Adresi)</label>
+                  <input type="text" id="smtp_host" placeholder="mail.benimplaka.com" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">SMTP Port</label>
+                  <input type="number" id="smtp_port" placeholder="587" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Güvenlik / Şifreleme</label>
+                  <select id="smtp_encryption" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="tls">STARTTLS (Port 587)</option>
+                    <option value="ssl">SSL / TLS (Port 465)</option>
+                    <option value="none">Şifrelemesiz (Port 25)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">SMTP Kullanıcı Adı / E-Posta</label>
+                  <input type="text" id="smtp_user" placeholder="noreply@benimplaka.com" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">SMTP Şifresi</label>
+                  <input type="password" id="smtp_pass" placeholder="••••••••••••" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+              </div>
+            </div>
+
+            <!-- Gmail Alanları -->
+            <div id="gmailFieldsPanel" class="space-y-4 pt-2 hidden">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Gmail Adresi / Client ID</label>
+                  <input type="text" id="gmail_client_id" placeholder="adiniz@gmail.com" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Google App Password (Uygulama Şifresi - 16 Haneli)</label>
+                  <input type="password" id="gmail_app_password" placeholder="xxxx xxxx xxxx xxxx" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 2. GÖNDERİCİ BİLGİLERİ -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              Gönderen Kimliği
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Gönderen E-Posta (From Email)</label>
+                <input type="email" id="from_email" placeholder="noreply@benimplaka.com" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Gönderen Adı (From Name)</label>
+                <input type="text" id="from_name" placeholder="3D Coreqm Store" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. CANLI TEST E-POSTASI GÖNDERME ARACI -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center gap-3 pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Canlı E-Posta Test Aracı</h3>
+                <p class="text-xs text-neutral-500 dark:text-zinc-400">Sunucu ayarlarınızın çalıştığını doğrulamak için anlık test postası gönderin.</p>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+              <input type="email" id="test_recipient_email" placeholder="alici@example.com" class="w-full sm:w-80 bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              <button type="button" id="btnSendTestMail" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-neutral-900 dark:bg-white hover:bg-neutral-800 dark:hover:bg-neutral-200 text-white dark:text-neutral-950 font-bold text-xs uppercase tracking-wider transition-colors shadow-sm flex items-center justify-center gap-2">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+                <span>Test E-Postası Gönder</span>
+              </button>
+            </div>
+            <span id="testMailStatus" class="hidden"></span>
+          </div>
+
+        </form>
+
+      </main>
+
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      MailSettingsViewModel.init();
+    });
+  </script>
+</body>
+</html>

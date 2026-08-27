@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Kayıt Ol — 3D Coreqm</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Pure Client-Side Store -->
+  <script src="store.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; background-color: #060709; color: #f1f5f9; letter-spacing: -0.01em; }
+    .glass-panel {
+      background: rgba(12, 14, 18, 0.85);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 bg-[#060709] relative">
+  
+  <!-- Top Language & Home Switcher -->
+  <div class="absolute top-6 right-6 flex items-center gap-3">
+    <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-xl p-1 text-[11px] font-mono">
+      <button onclick="setRegLang('tr')" id="langBtnTr" class="px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors">TR</button>
+      <button onclick="setRegLang('en')" id="langBtnEn" class="px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors">EN</button>
+    </div>
+    <a href="/" class="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 transition-colors">
+      <i data-lucide="home" class="w-4 h-4"></i>
+    </a>
+  </div>
+
+  <div class="w-full max-w-md">
+    
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <a href="/" class="inline-flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center shadow-lg">
+          <span class="font-mono font-bold text-sm text-white">Æ</span>
+        </div>
+        <span class="font-bold text-lg tracking-wider text-white">3D<span class="text-zinc-400"> Coreqm</span></span>
+      </a>
+      <p class="text-xs text-zinc-400 mt-2 font-mono" data-i18n="regTagline">Yeni Üyelik Oluşturun</p>
+    </div>
+
+    <!-- Register Box -->
+    <div class="glass-panel p-8 rounded-3xl">
+      <h2 class="text-lg font-bold text-white mb-1" data-i18n="regTitle">Hesap Oluşturun</h2>
+      <p class="text-xs text-zinc-400 mb-6 font-light" data-i18n="regDesc">AETHER ekosistemine katılın.</p>
+
+      <form id="registerForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-zinc-300 uppercase mb-1.5" data-i18n="lblFullName">Ad Soyad</label>
+          <input type="text" id="fullName" required placeholder="Ahmet Yılmaz" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-zinc-300 uppercase mb-1.5" data-i18n="lblUsername">Kullanıcı Adı</label>
+          <input type="text" id="username" required placeholder="ahmetyilmaz" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500 font-mono">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-zinc-300 uppercase mb-1.5" data-i18n="lblEmail">E-Posta Adresi</label>
+          <input type="email" id="email" required placeholder="ahmet@example.com" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500 font-mono">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-zinc-300 uppercase mb-1.5" data-i18n="lblPassword">Şifre</label>
+          <input type="password" id="password" required placeholder="••••••••" class="w-full bg-[#101217] border border-zinc-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-zinc-500 font-mono">
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-zinc-700 hover:bg-zinc-600 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-lg mt-2" data-i18n="btnSignUp">
+          Kayıt Ol ve Giriş Yap
+        </button>
+      </form>
+
+      <div class="text-center mt-6 text-xs text-zinc-400 font-light">
+        <span data-i18n="alreadyHave">Zaten hesabınız var mı?</span> <a href="/login.html" class="text-white hover:underline font-semibold" data-i18n="loginLink">Giriş Yapın</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const regI18n = {
+      tr: {
+        regTagline: "Yeni Üyelik Oluşturun",
+        regTitle: "Hesap Oluşturun",
+        regDesc: "AETHER ekosistemine katılın.",
+        lblFullName: "Ad Soyad",
+        lblUsername: "Kullanıcı Adı",
+        lblEmail: "E-Posta Adresi",
+        lblPassword: "Şifre",
+        btnSignUp: "Kayıt Ol ve Giriş Yap",
+        alreadyHave: "Zaten hesabınız var mı?",
+        loginLink: "Giriş Yapın"
+      },
+      en: {
+        regTagline: "Create a New Membership",
+        regTitle: "Create your Account",
+        regDesc: "Join the AETHER autonomous luxury ecosystem.",
+        lblFullName: "Full Name",
+        lblUsername: "Username",
+        lblEmail: "Email Address",
+        lblPassword: "Password",
+        btnSignUp: "Sign Up & Access Portal",
+        alreadyHave: "Already have an account?",
+        loginLink: "Sign In"
+      }
+    };
+
+    let regLang = localStorage.getItem('aether_lang') || 'tr';
+
+    function setRegLang(lang) {
+      regLang = lang;
+      localStorage.setItem('aether_lang', lang);
+      document.documentElement.lang = lang;
+
+      const t = regI18n[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.textContent = t[key];
+      });
+
+      const btnTr = document.getElementById('langBtnTr');
+      const btnEn = document.getElementById('langBtnEn');
+      if (lang === 'tr') {
+        btnTr.className = 'px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors';
+        btnEn.className = 'px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors';
+      } else {
+        btnEn.className = 'px-2 py-1 rounded-lg text-white font-bold bg-zinc-700 transition-colors';
+        btnTr.className = 'px-2 py-1 rounded-lg text-zinc-400 hover:text-white transition-colors';
+      }
+    }
+
+    lucide.createIcons();
+
+    document.getElementById('registerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const full_name = document.getElementById('fullName').value;
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const res = Store.register({ full_name, username, email, password });
+      if (res.success) {
+        alert(regLang === 'tr' ? 'Hesabınız başarıyla oluşturuldu!' : 'Account created successfully!');
+        window.location.href = '/profile.html';
+      } else {
+        alert(res.error || 'Kayıt başarısız.');
+      }
+    });
+
+    setRegLang(regLang);
+  </script>
+</body>
+</html>

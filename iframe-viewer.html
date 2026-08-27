@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>AETHER 3D WebP Iframe Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Pure Client-Side Store -->
+  <script src="store.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #060709;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      letter-spacing: -0.01em;
+    }
+    #viewerContainer {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    #viewerContainer:active {
+      cursor: grabbing;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .badge {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(12, 14, 18, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.3s;
+    }
+    .badge span { color: #f8fafc; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div id="viewerContainer">
+    <canvas id="viewerCanvas"></canvas>
+    <div class="badge" id="hintBadge">
+      <span>360°</span> Döndürmek için sürükleyin
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const folder = urlParams.get('folder') || 'frames';
+    let totalFrames = parseInt(urlParams.get('count')) || 240;
+
+    const canvas = document.getElementById('viewerCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('viewerContainer');
+    const hintBadge = document.getElementById('hintBadge');
+
+    const images = [];
+    let currentFrame = 0;
+
+    function getPath(i) {
+      const num = (i + 1).toString().padStart(4, '0');
+      return `${folder}/frame_${num}.webp`;
+    }
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = container.clientWidth * dpr;
+      canvas.height = container.clientHeight * dpr;
+      if (images[currentFrame] && images[currentFrame].complete) {
+        draw(currentFrame);
+      }
+    }
+    window.addEventListener('resize', resize);
+
+    function draw(idx) {
+      const img = images[idx];
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+
+      const r = Math.min(cw / iw, ch / ih);
+      const nw = iw * r;
+      const nh = ih * r;
+
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(img, (cw - nw) / 2, (ch - nh) / 2, nw, nh);
+    }
+
+    async function loadFrames() {
+      images.length = 0;
+
+      if (folder.startsWith('custom_')) {
+        const customFrames = await Store.getCustomFramesFromDB(folder);
+        if (customFrames && customFrames.length > 0) {
+          totalFrames = customFrames.length;
+          for (let i = 0; i < totalFrames; i++) {
+            const img = new Image();
+            img.src = customFrames[i];
+            if (i === 0) {
+              img.onload = () => { resize(); draw(0); };
+            }
+            images.push(img);
+          }
+          resize();
+          return;
+        }
+      }
+
+      for (let i = 0; i < totalFrames; i++) {
+        const img = new Image();
+        img.src = getPath(i);
+        if (i === 0) {
+          img.onload = () => { resize(); draw(0); };
+        }
+        images.push(img);
+      }
+      resize();
+    }
+
+    // Drag Interaction
+    let isDragging = false;
+    let startX = 0;
+
+    container.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging || images.length === 0) return;
+      const delta = e.clientX - startX;
+      if (Math.abs(delta) > 4) {
+        const step = delta > 0 ? 1 : -1;
+        currentFrame = (currentFrame + step + totalFrames) % totalFrames;
+        draw(currentFrame);
+        startX = e.clientX;
+      }
+    });
+
+    window.addEventListener('mouseup', () => isDragging = false);
+
+    // Touch Support (Mobile)
+    container.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+      if (!isDragging || images.length === 0) return;
+      const delta = e.touches[0].clientX - startX;
+      if (Math.abs(delta) > 4) {
+        const step = delta > 0 ? 1 : -1;
+        currentFrame = (currentFrame + step + totalFrames) % totalFrames;
+        draw(currentFrame);
+        startX = e.touches[0].clientX;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => isDragging = false);
+
+    // Mouse Wheel Rotation
+    container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (images.length === 0) return;
+      const step = e.deltaY > 0 ? 1 : -1;
+      currentFrame = (currentFrame + step + totalFrames) % totalFrames;
+      draw(currentFrame);
+    }, { passive: false });
+
+    loadFrames();
+    setTimeout(resize, 60);
+  </script>
+</body>
+</html>

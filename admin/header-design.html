@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>3D Video & Hero Ayarları — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/settings.model.js"></script>
+  <script src="js/viewmodels/header-design.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">3D Video & Hero Tasarım Ayarları</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Üst header yerleşimi, 3D canvas başlıkları ve anasayfa butonlarını yönetin.</p>
+          </div>
+          <button form="settingsForm" type="submit" class="px-6 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors self-start sm:self-auto">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Tasarımı Kaydet</span>
+          </button>
+        </div>
+
+        <form id="settingsForm" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Kart 1: Navigasyon -->
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Navigasyon & Header Düzeni
+              </h3>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Header Konum Modu</label>
+                <select id="set_header_mode" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                  <option value="fixed">Fixed (Tavana Bitişik Sabit)</option>
+                  <option value="sticky">Sticky (Sayfayla Birlikte Kayan)</option>
+                  <option value="static">Static (Normal Akışta)</option>
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Tavana Bitişiklik</label>
+                  <select id="set_header_flush" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="1">Tam Sıfır Bitişik</option>
+                    <option value="0">Yüzen Kapsül (Floating)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">E-Ticaret Modu</label>
+                  <select id="set_ecommerce_enabled" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="1">Aktif (Sepet & Satın Al)</option>
+                    <option value="0">Pasif (Sadece Tanıtım)</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Anasayfa Logo / Marka Metni</label>
+                <input type="text" id="set_site_title" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+            </div>
+
+            <!-- Kart 2: 3D Canvas Overlay -->
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                3D Canvas Üst Metin Kaplaması (Overlay)
+              </h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">3D Hero Alanı</label>
+                  <select id="set_show_3d_hero" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="1">Göster</option>
+                    <option value="0">Gizle</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Hero Başlık Yazısı</label>
+                  <select id="set_hero_title_enabled" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="1">Aktif</option>
+                    <option value="0">Pasif</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Yatay Hizalama</label>
+                  <select id="set_hero_align" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="left">Sola Hizalı</option>
+                    <option value="center">Ortalı</option>
+                    <option value="right">Sağa Hizalı</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Dikey Hizalama</label>
+                  <select id="set_hero_valign" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="center">Ortada</option>
+                    <option value="top">Üstte</option>
+                    <option value="bottom">Altta</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Hero Rozet Metni</label>
+                <input type="text" id="set_hero_tag" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Hero Ana Başlık</label>
+                <input type="text" id="set_hero_title" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Hero Alt Açıklama</label>
+                <textarea id="set_hero_subtitle" rows="2" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2 text-xs text-neutral-900 dark:text-white outline-none"></textarea>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Buton Metni</label>
+                  <input type="text" id="set_hero_btn_text" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Buton Hedef URL</label>
+                  <input type="text" id="set_hero_btn_url" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+      </main>
+
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      HeaderDesignViewModel.init();
+    });
+  </script>
+</body>
+</html>

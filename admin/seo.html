@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Gelişmiş SEO & Analitik — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/seo.model.js"></script>
+  <script src="js/viewmodels/seo.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Gelişmiş SEO & Analitik</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Arama motoru optimizasyonu, Google Analytics, Meta Pixel ve canlı SERP simülatörü.</p>
+          </div>
+          <button form="seoForm" type="submit" class="px-6 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors self-start sm:self-auto">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>SEO Ayarlarını Kaydet</span>
+          </button>
+        </div>
+
+        <!-- SEO Alt Sekmeler Menüsü -->
+        <div class="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-neutral-100 dark:bg-zinc-900/80 border border-neutral-200/80 dark:border-zinc-800">
+          <button type="button" onclick="SeoViewModel.switchSubTab('identity')" data-subtab="identity" class="seo-tab-btn px-4 py-2.5 rounded-xl font-bold text-xs bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/60 shadow-xs flex items-center gap-2">
+            <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+            <span>1. Kimlik & Meta</span>
+          </button>
+          <button type="button" onclick="SeoViewModel.switchSubTab('social')" data-subtab="social" class="seo-tab-btn px-4 py-2.5 rounded-xl font-medium text-xs text-neutral-600 dark:text-zinc-400 hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-2">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            <span>2. Sosyal Paylaşım</span>
+          </button>
+          <button type="button" onclick="SeoViewModel.switchSubTab('analytics')" data-subtab="analytics" class="seo-tab-btn px-4 py-2.5 rounded-xl font-medium text-xs text-neutral-600 dark:text-zinc-400 hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-2">
+            <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+            <span>3. Analitik & Pikseller</span>
+          </button>
+          <button type="button" onclick="SeoViewModel.switchSubTab('search-console')" data-subtab="search-console" class="seo-tab-btn px-4 py-2.5 rounded-xl font-medium text-xs text-neutral-600 dark:text-zinc-400 hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-2">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            <span>4. Arama Motoru Doğrulama</span>
+          </button>
+          <button type="button" onclick="SeoViewModel.switchSubTab('tech-seo')" data-subtab="tech-seo" class="seo-tab-btn px-4 py-2.5 rounded-xl font-medium text-xs text-neutral-600 dark:text-zinc-400 hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-2">
+            <i data-lucide="file-code" class="w-3.5 h-3.5"></i>
+            <span>5. Robots & İndeksleme</span>
+          </button>
+          <button type="button" onclick="SeoViewModel.switchSubTab('code-inject')" data-subtab="code-inject" class="seo-tab-btn px-4 py-2.5 rounded-xl font-medium text-xs text-neutral-600 dark:text-zinc-400 hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-2">
+            <i data-lucide="code" class="w-3.5 h-3.5"></i>
+            <span>6. Özel Kod Enjeksiyonu</span>
+          </button>
+        </div>
+
+        <form id="seoForm" class="space-y-6">
+
+          <!-- PANEL 1: KİMLİK & META -->
+          <div id="sub-panel-identity" class="seo-sub-panel space-y-6">
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Site Başlığı & Meta Açıklaması
+              </h3>
+              <div>
+                <div class="flex justify-between text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">
+                  <span>Site Başlığı (Meta Title)</span>
+                  <span id="titleCount" class="text-indigo-500">0 / 60</span>
+                </div>
+                <input type="text" id="seo_meta_title" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">
+                  <span>Meta Açıklaması (Meta Description)</span>
+                  <span id="descCount" class="text-indigo-500">0 / 160</span>
+                </div>
+                <textarea id="seo_meta_desc" rows="3" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none"></textarea>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Anahtar Kelimeler (Keywords)</label>
+                  <input type="text" id="seo_keywords" placeholder="virgülle ayırın..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Site / Şirket Adı</label>
+                  <input type="text" id="seo_site_name" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                </div>
+              </div>
+            </div>
+
+            <!-- SERP Canlı Önizleme -->
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-3">
+              <h4 class="text-xs font-mono font-bold text-neutral-400 dark:text-zinc-500 uppercase tracking-wider">Google SERP Canlı Arama Simülatörü</h4>
+              <div class="p-4 rounded-xl bg-neutral-50 dark:bg-black/40 border border-neutral-200 dark:border-zinc-800 space-y-1">
+                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono truncate">https://benimplaka.com</div>
+                <div id="serpPrevTitle" class="text-base text-blue-600 dark:text-blue-400 font-medium hover:underline cursor-pointer truncate">3D Coreqm</div>
+                <div id="serpPrevDesc" class="text-xs text-neutral-600 dark:text-zinc-400 line-clamp-2">Meta açıklaması girildiğinde burada görünür.</div>
+              </div>
+            </div>
+
+            <!-- Otomatik WebP Logo & Favicon -->
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Site Logosu & Favicon (Otomatik WebP)
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <div class="flex justify-between items-center mb-1.5">
+                    <label class="text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase">Site Logosu</label>
+                    <span id="badge_seo_logo" class="hidden text-[10px] font-mono"></span>
+                  </div>
+                  <input type="file" id="file_seo_logo" accept="image/*" class="w-full text-xs text-neutral-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 dark:file:bg-zinc-800 file:text-neutral-700 dark:file:text-zinc-300 cursor-pointer">
+                  <input type="hidden" id="seo_logo_url">
+                </div>
+                <div>
+                  <div class="flex justify-between items-center mb-1.5">
+                    <label class="text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase">Favicon (.webp / .png)</label>
+                    <span id="badge_seo_favicon" class="hidden text-[10px] font-mono"></span>
+                  </div>
+                  <input type="file" id="file_seo_favicon" accept="image/*" class="w-full text-xs text-neutral-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 dark:file:bg-zinc-800 file:text-neutral-700 dark:file:text-zinc-300 cursor-pointer">
+                  <input type="hidden" id="seo_favicon_url">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 2: SOSYAL PAYLAŞIM (OPENGRAPH) -->
+          <div id="sub-panel-social" class="seo-sub-panel space-y-6 hidden">
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Sosyal Medya Kartları (OpenGraph & Twitter)
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">OpenGraph Başlığı</label>
+                  <input type="text" id="seo_og_title" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Twitter / X Hesabı (@handle)</label>
+                  <input type="text" id="seo_twitter_handle" placeholder="@benimplaka" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Paylaşım Açıklaması</label>
+                <textarea id="seo_og_desc" rows="2" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2 text-xs text-neutral-900 dark:text-white outline-none"></textarea>
+              </div>
+              <div>
+                <div class="flex justify-between items-center mb-1.5">
+                  <label class="text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase">Sosyal Paylaşım Görseli (1200x630)</label>
+                  <span id="badge_seo_og" class="hidden text-[10px] font-mono"></span>
+                </div>
+                <input type="file" id="file_seo_og" accept="image/*" class="w-full text-xs text-neutral-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 dark:file:bg-zinc-800 file:text-neutral-700 dark:file:text-zinc-300 cursor-pointer">
+                <input type="hidden" id="seo_og_image">
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 3: ANALİTİK & PİKSELLER -->
+          <div id="sub-panel-analytics" class="seo-sub-panel space-y-6 hidden">
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Analitik ve Dönüşüm Takip Pikselleri
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Google Analytics 4 ID</label>
+                  <input type="text" id="seo_ga4_id" placeholder="G-XXXXXXXXXX" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Google Tag Manager ID</label>
+                  <input type="text" id="seo_gtm_id" placeholder="GTM-XXXXXXX" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Meta (Facebook/Instagram) Pixel ID</label>
+                  <input type="text" id="seo_fb_pixel" placeholder="123456789012345" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">TikTok Pixel ID</label>
+                  <input type="text" id="seo_tiktok_pixel" placeholder="CXXXXXXXXXXXXXX" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 4: SEARCH CONSOLE DOĞRULAMA -->
+          <div id="sub-panel-search-console" class="seo-sub-panel space-y-6 hidden">
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Arama Motoru Mülkiyet Doğrulama Kodları
+              </h3>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Google Search Console (google-site-verification)</label>
+                <input type="text" id="seo_google_verify" placeholder="Örn: 4yX..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Bing Webmaster (msvalidate.01)</label>
+                  <input type="text" id="seo_bing_verify" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Yandex Webmaster (yandex-verification)</label>
+                  <input type="text" id="seo_yandex_verify" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 5: ROBOTS & TEKNİK SEO -->
+          <div id="sub-panel-tech-seo" class="seo-sub-panel space-y-6 hidden">
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Robots.txt & İndeksleme Direktifleri
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Canonical URL</label>
+                  <input type="url" id="seo_canonical" placeholder="https://benimplaka.com" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Robots Meta Etiketi</label>
+                  <select id="seo_robots_meta" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="index, follow">index, follow (Önerilen)</option>
+                    <option value="noindex, follow">noindex, follow</option>
+                    <option value="noindex, nofollow">noindex, nofollow (Arama Motorlarını Engelle)</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Canlı Robots.txt Editörü</label>
+                <textarea id="seo_robots_txt" rows="4" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 6: ÖZEL KOD ENJEKSİYONU -->
+          <div id="sub-panel-code-inject" class="seo-sub-panel space-y-6 hidden">
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Canlı Sohbet & Özel Kodlar
+              </h3>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">&lt;head&gt; Öncesine Eklenecek Kodlar (Örn: Canlı Sohbet, Özel CSS)</label>
+                <textarea id="seo_custom_head" rows="4" placeholder="<script>...</script>" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono"></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">&lt;/body&gt; Kapanışı Öncesine Eklenecek Kodlar</label>
+                <textarea id="seo_custom_body" rows="4" placeholder="<script>...</script>" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <input type="hidden" id="seo_author">
+          <input type="hidden" id="seo_touch_icon">
+          <input type="hidden" id="seo_yandex_metrica">
+
+        </form>
+
+      </main>
+
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      SeoViewModel.init();
+    });
+  </script>
+</body>
+</html>

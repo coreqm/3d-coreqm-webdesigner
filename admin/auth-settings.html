@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Sosyal Giriş & 2FA — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/auth.model.js"></script>
+  <script src="js/viewmodels/auth-settings.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Sosyal Giriş & 2FA Güvenliği</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Google, Microsoft OAuth oturum açma ve iki aşamalı doğrulamayı (2FA) yönetin.</p>
+          </div>
+          <button form="authSettingsForm" type="submit" class="px-6 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors self-start sm:self-auto">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Ayarları Kaydet</span>
+          </button>
+        </div>
+
+        <form id="authSettingsForm" class="space-y-6">
+
+          <!-- 1. GOOGLE GİRİŞİ -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
+                  G
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Google ile Giriş Yap (Google Sign-In)</h3>
+                  <p class="text-xs text-neutral-500 dark:text-zinc-400">Kullanıcıların Google hesaplarıyla tek tıkla oturum açmasını sağlayın.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="google_login_enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Google OAuth Client ID</label>
+                <input type="text" id="google_client_id" placeholder="123456789-xxxxxx.apps.googleusercontent.com" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Google Client Secret</label>
+                <input type="password" id="google_client_secret" placeholder="GOCSPX-••••••••••••" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+            </div>
+            <div class="text-[11px] font-mono text-neutral-400">
+              Yönlendirme URI (Redirect URI): <code class="bg-neutral-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-indigo-500">https://benimplaka.com/auth/google/callback</code>
+            </div>
+          </div>
+
+          <!-- 2. MICROSOFT GİRİŞİ -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                  M
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Microsoft ile Giriş Yap (Azure / Entra ID)</h3>
+                  <p class="text-xs text-neutral-500 dark:text-zinc-400">Outlook, Hotmail veya kurumsal Microsoft 365 hesaplarıyla oturum açma.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="microsoft_login_enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Application (Client) ID</label>
+                <input type="text" id="microsoft_client_id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Tenant ID (veya 'common')</label>
+                <input type="text" id="microsoft_tenant_id" placeholder="common" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Client Secret</label>
+                <input type="password" id="microsoft_client_secret" placeholder="••••••••••••" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+            </div>
+            <div class="text-[11px] font-mono text-neutral-400">
+              Yönlendirme URI (Redirect URI): <code class="bg-neutral-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-blue-500">https://benimplaka.com/auth/microsoft/callback</code>
+            </div>
+          </div>
+
+          <!-- 3. 2FA (İKİ AŞAMALI DOĞRULAMA) -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-neutral-900 dark:text-white">2FA — İki Aşamalı Güvenlik Doğrulaması</h3>
+                  <p class="text-xs text-neutral-500 dark:text-zinc-400">Giriş yaparken şifreye ek olarak 6 haneli doğrulama kodu zorunluluğu getirin.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="two_factor_enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </div>
+
+            <!-- 2FA Detay Alanı -->
+            <div id="twoFactorDetailsPanel" class="space-y-4 pt-2 hidden">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Doğrulama Yöntemi</label>
+                  <select id="two_factor_method" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                    <option value="totp">Authenticator Uygulaması (Google / Microsoft Authenticator)</option>
+                    <option value="email">E-Postaya Güvenlik Kodu Gönder</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Gizli Anahtar (Secret Key)</label>
+                  <input type="text" id="two_factor_secret" class="w-full bg-neutral-100 dark:bg-zinc-800/60 border border-neutral-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-neutral-50 dark:bg-zinc-900/60 border border-neutral-200 dark:border-zinc-800 flex items-center gap-4">
+                <div class="w-16 h-16 rounded-xl bg-white p-1 border border-neutral-300 flex items-center justify-center text-neutral-900 font-mono text-[9px] text-center">
+                  [QR KOD]
+                </div>
+                <div class="text-xs text-neutral-600 dark:text-zinc-300">
+                  <span class="font-bold block text-neutral-900 dark:text-white">Authenticator Kurulumu:</span>
+                  Telefonunuzdaki Google Authenticator uygulamasından QR kodu taratın veya yukarıdaki gizli anahtarı girin.
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </form>
+
+      </main>
+
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      AuthSettingsViewModel.init();
+    });
+  </script>
+</body>
+</html>

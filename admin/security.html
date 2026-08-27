@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Şifre & Güvenlik — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/viewmodels/security.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Yönetici Şifre & Güvenlik</h2>
+          <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Yönetici hesabınızın şifresini güncelleyin.</p>
+        </div>
+
+        <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 sm:p-8 max-w-xl shadow-2xs space-y-6">
+          <form id="adminPassForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Mevcut Şifre *</label>
+              <input type="password" id="adm_old_pass" required placeholder="••••••••" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none focus:border-indigo-500 font-mono">
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Yeni Şifre (En az 6 karakter) *</label>
+              <input type="password" id="adm_new_pass" required placeholder="••••••••" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none focus:border-indigo-500 font-mono">
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md hover:bg-neutral-800 dark:hover:bg-neutral-100 flex items-center justify-center gap-2 mt-2">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+              <span>Şifreyi Güvenle Güncelle</span>
+            </button>
+          </form>
+
+          <div class="pt-4 border-t border-neutral-100 dark:border-zinc-800 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+            </div>
+            <div class="text-[11px] text-neutral-500 dark:text-zinc-400">
+              <span class="font-bold text-neutral-800 dark:text-zinc-200 block">256-Bit Oturum Koruması Aktif</span>
+              Şifreleriniz SHA-256 ve Bcrypt standartlarında güvenle saklanmaktadır.
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      SecurityViewModel.init();
+    });
+  </script>
+</body>
+</html>

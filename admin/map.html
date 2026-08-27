@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Harita & Showroom — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/settings.model.js"></script>
+  <script src="js/viewmodels/map.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Harita & Showroom Konumu</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">Mağaza açık adresi, telefon numarası ve Google Maps harita embed entegrasyonu.</p>
+          </div>
+          <button form="mapForm" type="submit" class="px-6 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors self-start sm:self-auto">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Konumu Kaydet</span>
+          </button>
+        </div>
+
+        <form id="mapForm" class="space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Sol Form -->
+            <div class="lg:col-span-6 bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                Konum Bilgileri
+              </h3>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Showroom / Şube Başlığı</label>
+                <input type="text" id="map_title" placeholder="3D Coreqm Flagship Showroom" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Açık Adres</label>
+                <textarea id="map_address" rows="3" placeholder="Büyükdere Cad. No:193 Levent / İstanbul" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2 text-xs text-neutral-900 dark:text-white outline-none"></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">İletişim Telefonu</label>
+                <input type="text" id="map_phone" placeholder="+90 (212) 350 00 00" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Google Maps Embed iframe Kodu</label>
+                <textarea id="map_iframe" rows="4" placeholder='<iframe src="https://www.google.com/maps/embed?..." ...></iframe>' class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono"></textarea>
+              </div>
+            </div>
+
+            <!-- Sağ Canlı Harita Önizleme Kartı -->
+            <div class="lg:col-span-6 bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs flex flex-col justify-between">
+              <div>
+                <h3 class="font-bold text-sm text-neutral-900 dark:text-white pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                  Canlı Harita Önizlemesi
+                </h3>
+                <p class="text-xs text-neutral-500 dark:text-zinc-400 mt-2 mb-4">
+                  Sol tarafta iframe kodu yazılır yazılmaz burada gerçek zamanlı olarak görüntülenir.
+                </p>
+              </div>
+
+              <div id="adminMapPreview" class="w-full h-80 rounded-xl bg-neutral-100 dark:bg-black/50 border border-neutral-200 dark:border-zinc-800 flex items-center justify-center overflow-hidden">
+                <span class="text-xs font-mono text-neutral-400">Harita embed kodu bekleniyor...</span>
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+      </main>
+
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      MapViewModel.init();
+    });
+  </script>
+</body>
+</html>

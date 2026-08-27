@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 3D Coreqm Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#090b10">
+  <title>Ödeme Sistemleri — 3D Coreqm Admin</title>
+  
+  <link rel="stylesheet" href="/css/output.css">
+  
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Store & MVVM Layers -->
+  <script src="../store.js"></script>
+  <script src="js/components/webp-helper.js"></script>
+  <script src="js/components/admin-sidebar.js"></script>
+  <script src="js/components/admin-header.js"></script>
+
+  <script src="js/models/user.model.js"></script>
+  <script src="js/models/payment.model.js"></script>
+  <script src="js/viewmodels/payments.viewmodel.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif; letter-spacing: -0.01em; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+  </style>
+</head>
+<body class="h-screen overflow-hidden bg-[#f8fafc] dark:bg-[#090b10] text-neutral-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
+
+  <div class="flex-1 flex h-full overflow-hidden">
+    <div id="sidebar-container" class="flex-shrink-0 h-full"></div>
+
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto custom-scrollbar">
+      <div id="header-container"></div>
+
+      <main class="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+        
+        <!-- Üst Başlık & Kaydet Butonu -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight">Ödeme Ağ Geçitleri & Sistemleri</h2>
+            <p class="text-sm text-neutral-500 dark:text-zinc-400 mt-1 font-normal">İstediğiniz ödeme yöntemini açıp kapatabilir, API anahtarlarını yapılandırabilirsiniz.</p>
+          </div>
+          <button form="paymentsForm" type="submit" class="px-6 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium text-sm flex items-center gap-2 shadow-xs transition-colors self-start sm:self-auto">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Değişiklikleri Kaydet</span>
+          </button>
+        </div>
+
+        <form id="paymentsForm" class="space-y-6">
+
+          <!-- 1. İYZİCO (TÜRKİYE SANAL POS) -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                  <i data-lucide="credit-card" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-neutral-900 dark:text-white">İyzico Sanal POS (3D Secure & Taksit)</h3>
+                  <p class="text-xs text-neutral-500 dark:text-zinc-400">Türkiye kredi ve banka kartları için BDDK lisanslı ödeme altyapısı.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="iyzico_enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Çalışma Modu</label>
+                <select id="iyzico_mode" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                  <option value="sandbox">Sandbox (Test Modu)</option>
+                  <option value="live">Live (Canlı / Gerçek Ödeme)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">API Key</label>
+                <input type="text" id="iyzico_api_key" placeholder="sandbox-..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Secret Key</label>
+                <input type="password" id="iyzico_secret_key" placeholder="••••••••••••" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+            </div>
+            <input type="hidden" id="iyzico_base_url">
+          </div>
+
+          <!-- 2. STRIPE (GLOBAL KART) -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                  <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Stripe (Uluslararası Kart Ödemesi)</h3>
+                  <p class="text-xs text-neutral-500 dark:text-zinc-400">Global müşteriler için Apple Pay, Google Pay ve Visa/Mastercard altyapısı.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="stripe_enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Çalışma Modu</label>
+                <select id="stripe_mode" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                  <option value="test">Test Modu</option>
+                  <option value="live">Canlı (Live) Mod</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Publishable Key</label>
+                <input type="text" id="stripe_pub_key" placeholder="pk_test_..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Secret Key</label>
+                <input type="password" id="stripe_sec_key" placeholder="sk_test_..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. PAYPAL -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                  P
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-neutral-900 dark:text-white">PayPal Checkout</h3>
+                  <p class="text-xs text-neutral-500 dark:text-zinc-400">Yurt dışı ödemeler için tek tıkla PayPal ile hızlı ödeme.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="paypal_enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Çalışma Modu</label>
+                <select id="paypal_mode" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                  <option value="sandbox">Sandbox (Test Modu)</option>
+                  <option value="live">Live Mod</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Client ID</label>
+                <input type="text" id="paypal_client_id" placeholder="AY..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Secret Key</label>
+                <input type="password" id="paypal_secret_key" placeholder="••••••••••••" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. BANKA HAVALESİ / EFT -->
+          <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <i data-lucide="building" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Banka Havalesi / EFT / FAST</h3>
+                  <p class="text-xs text-neutral-500 dark:text-zinc-400">Müşterilerinize IBAN bilgilerinizi göstererek doğrudan banka transferi alın.</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="bank_enabled" class="sr-only peer">
+                <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Banka Adı</label>
+                <input type="text" id="bank_name" placeholder="Örn: Garanti BBVA" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Hesap Sahibi</label>
+                <input type="text" id="bank_holder" placeholder="Ad Soyad veya Şirket Ünvanı" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">IBAN Numarası</label>
+                <input type="text" id="bank_iban" placeholder="TR00 0000 0000 0000 0000 0000 00" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Sipariş Notu / Talimatlar</label>
+              <textarea id="bank_instructions" rows="2" placeholder="Lütfen açıklama kısmına sipariş numaranızı yazınız..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2 text-xs text-neutral-900 dark:text-white outline-none"></textarea>
+            </div>
+          </div>
+
+          <!-- 5. KAPIDA ÖDEME & KRİPTO -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Kapıda Ödeme -->
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                    <i data-lucide="truck" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Kapıda Ödeme (Nakit/Kart)</h3>
+                    <p class="text-xs text-neutral-500 dark:text-zinc-400">Teslimat anında kuryeye ödeme.</p>
+                  </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="cod_enabled" class="sr-only peer">
+                  <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Kapıda Ödeme Ek Hizmet Bedeli ($)</label>
+                <input type="number" step="0.5" id="cod_extra_fee" placeholder="5.00" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+              </div>
+            </div>
+
+            <!-- Kripto Ödeme -->
+            <div class="bg-white dark:bg-[#12141a] rounded-2xl border border-neutral-200/90 dark:border-zinc-800 p-6 shadow-2xs space-y-4">
+              <div class="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-zinc-800">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i data-lucide="coins" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">Kripto Ödeme (USDT/BTC)</h3>
+                    <p class="text-xs text-neutral-500 dark:text-zinc-400">Web3 / Kripto cüzdan transferi.</p>
+                  </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="crypto_enabled" class="sr-only peer">
+                  <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                </label>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Ağ (Network)</label>
+                  <input type="text" id="crypto_network" placeholder="TRC20 (USDT)" class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-mono text-neutral-700 dark:text-zinc-300 uppercase mb-1.5">Cüzdan Adresi</label>
+                  <input type="text" id="crypto_wallet" placeholder="T..." class="w-full bg-white dark:bg-[#181b22] border border-neutral-300 dark:border-zinc-700 rounded-xl px-4 py-2.5 text-xs text-neutral-900 dark:text-white outline-none font-mono">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- PayTR (Gizli/Opsiyonel Alan) -->
+          <input type="hidden" id="paytr_enabled">
+          <input type="hidden" id="paytr_merchant_id">
+          <input type="hidden" id="paytr_merchant_key">
+          <input type="hidden" id="paytr_merchant_salt">
+
+        </form>
+
+      </main>
+
+      </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      PaymentsViewModel.init();
+    });
+  </script>
+</body>
+</html>
