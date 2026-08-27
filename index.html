@@ -13,7 +13,7 @@
 
   <!-- SEO Meta Tags -->
   <meta name="description" id="seoMetaDesc" content="3D Coreqm — 240 kare WebP sekansı ve Grade 5 havacılık titanyumu ile üretilen otonom lüks sistemler.">
-  <meta name="keywords" id="seoMetaKeywords" content="aether one, 3d vitrin, 3d canvas, titanyum, webp frame, e-ticaret">
+  <meta name="keywords" id="seoMetaKeywords" content="3d coreqm, 3d vitrin, 3d canvas, titanyum, webp frame, e-ticaret">
   <meta name="author" id="seoMetaAuthor" content="Muhammed Ali Gürdal — BenimPlaka">
   <meta name="robots" id="seoMetaRobots" content="index, follow">
   <link rel="canonical" id="seoCanonical" href="https://benimplaka.com">
@@ -136,7 +136,7 @@
       <a href="/" class="flex items-center gap-3 group">
         <div class="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 p-0.5 shadow-lg group-hover:scale-105 transition-transform flex items-center justify-center overflow-hidden">
           <img id="navLogoImg" src="frames/frame_0001.webp" alt="Logo" class="w-full h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-          <span class="hidden text-xs font-bold font-mono text-white">Æ</span>
+          <span class="hidden text-xs font-bold font-mono text-white">3D</span>
         </div>
         <div class="flex flex-col">
           <span id="navSiteTitle" class="font-bold text-sm tracking-wider leading-none text-white">3D<span class="text-zinc-400"> Coreqm</span></span>
@@ -343,7 +343,7 @@
         <div class="lg:col-span-6">
           <div class="flex items-center gap-3 mb-3">
             <div class="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-              <span class="text-xs font-bold font-mono text-white">Æ</span>
+              <span class="text-xs font-bold font-mono text-white">3D</span>
             </div>
             <span class="font-bold text-base tracking-wider text-white">3D<span class="text-zinc-500"> Coreqm</span></span>
           </div>
@@ -851,10 +851,10 @@
         }
       }
 
-      // SEO & Meta Etiketlerini Uygula
-      if (currentSettings.seo_meta_title) {
-        document.title = currentSettings.seo_meta_title;
-      }
+      // SEO & Meta Etiketlerini Uygula (AETHER kalintilarini temizle)
+      let resolvedDocTitle = currentSettings.seo_meta_title || currentSettings.site_title || '3D Coreqm — Elite Autonomous Systems & Luxury Store';
+      resolvedDocTitle = resolvedDocTitle.replace(/AETHER\s*ONE/gi, '3D Coreqm').replace(/AETHER/gi, '3D Coreqm');
+      document.title = resolvedDocTitle;
       const setAttr = (id, attr, val) => {
         const el = document.getElementById(id);
         if (el && val) el.setAttribute(attr, val);
@@ -891,9 +891,13 @@
           navLogo.style.display = 'block';
         }
       }
-      if (currentSettings.site_title) {
+      if (currentSettings.site_title || currentSettings.seo_meta_title) {
         const navTitle = document.getElementById('navSiteTitle');
-        if (navTitle) navTitle.textContent = currentSettings.site_title;
+        if (navTitle) {
+          let navTxt = currentSettings.site_title || currentSettings.seo_meta_title || '3D Coreqm';
+          navTxt = navTxt.replace(/AETHER\s*ONE/gi, '3D Coreqm').replace(/AETHER/gi, '3D Coreqm');
+          navTitle.textContent = navTxt;
+        }
       }
 
       // Webmaster Doğrulama Kodları

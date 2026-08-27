@@ -86,7 +86,7 @@ window.SeoViewModel = {
 
   updateSerp() {
     const t = document.getElementById('seo_meta_title')?.value || '3D Coreqm — 3D Video & Showcase';
-    const d = document.getElementById('seo_meta_desc')?.value || 'Yeni nesil Apple tarzı 3D video ve etkileşimli WebP ürün vitrini deneyimi.';
+    const d = document.getElementById('seo_meta_desc')?.value || 'Yeni nesil 3D Coreqm video ve etkileşimli WebP ürün vitrini deneyimi.';
 
     const prevT = document.getElementById('serpPrevTitle');
     const prevD = document.getElementById('serpPrevDesc');

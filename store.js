@@ -24,6 +24,19 @@ function openIndexedDB() {
 const Store = {
   // 1. Veritabanını / LocalStorage'ı İlk Kez Başlat
   init() {
+    // DERIN_TITLE_PURGE_EXECUTED: localStorage'daki tum eski AETHER ONE kalintilarini yok et
+    try {
+      ['aether_settings', 'aether_products', 'aether_iframes', 'aether_nav_menu', 'aether_user'].forEach(k => {
+        let raw = localStorage.getItem(k);
+        if (raw && /aether/i.test(raw)) {
+          let cleaned = raw
+            .replace(/AETHER\s*ONE/gi, '3D Coreqm')
+            .replace(/aether-one/gi, '3d-coreqm')
+            .replace(/AETHER/gi, '3D Coreqm');
+          localStorage.setItem(k, cleaned);
+        }
+      });
+    } catch (e) {}
     if (!localStorage.getItem('aether_settings')) {
       const defaultSettings = {
         header_mode: 'fixed',
@@ -49,7 +62,7 @@ const Store = {
         site_apple_touch_icon: 'frames/frame_0001.webp',
         seo_meta_title: '3D Coreqm — 3D Video & WebP Frame Vitrini | Otonom Lüks Sistemler',
         seo_meta_description: 'Grade 5 havacılık titanyumu, 240 kare WebP sekansı ve otonom lüks teknolojinin zirvesi. 360 derece etkileşimli yeni nesil vitrin.',
-        seo_keywords: 'aether one, 3d vitrin, 3d canvas, titanyum saat, webp frame, e-ticaret, lüks saat',
+        seo_keywords: '3d coreqm, 3d canvas, 3d vitrin, titanyum saat, webp frame, e-ticaret, lüks saat',
         seo_author: 'Muhammed Ali Gürdal — BenimPlaka',
         seo_canonical_url: 'https://benimplaka.com',
         seo_robots: 'index, follow',
@@ -125,7 +138,7 @@ const Store = {
       const defaultIframes = [
         {
           id: 1,
-          title: 'AETHER Titanyum Ana Vitrin',
+          title: '3D Coreqm Titanyum Ana Vitrin',
           subtitle: '240 Kare Apple WebP Sekansı',
           frames_folder: 'frames',
           frames_count: 240,
@@ -141,7 +154,7 @@ const Store = {
         {
           id: 1,
           title: '3D Coreqm Chrono',
-          slug: 'aether-one-chrono',
+          slug: '3d-coreqm-chrono',
           price: 1299,
           old_price: 1899,
           description: '360° dönebilen Grade 5 Titanyum gövde ve yerel yapay zeka işlemcisine sahip lüks otonom kronograf.',
@@ -257,7 +270,7 @@ const Store = {
     if (settings.site_apple_touch_icon === undefined) settings.site_apple_touch_icon = 'frames/frame_0001.webp';
     if (settings.seo_meta_title === undefined) settings.seo_meta_title = '3D Coreqm — 3D Video & WebP Frame Vitrini | Otonom Lüks Sistemler';
     if (settings.seo_meta_description === undefined) settings.seo_meta_description = 'Grade 5 havacılık titanyumu, 240 kare Apple WebP sekansı ve otonom lüks teknolojinin zirvesi. 360 derece etkileşimli yeni nesil vitrin.';
-    if (settings.seo_keywords === undefined) settings.seo_keywords = 'aether one, 3d vitrin, 3d canvas, titanyum saat, webp frame, e-ticaret, lüks saat';
+    if (settings.seo_keywords === undefined) settings.seo_keywords = '3d coreqm, 3d canvas, 3d vitrin, titanyum saat, webp frame, e-ticaret, lüks saat';
     if (settings.seo_author === undefined) settings.seo_author = 'Muhammed Ali Gürdal — BenimPlaka';
     if (settings.seo_canonical_url === undefined) settings.seo_canonical_url = 'https://benimplaka.com';
     if (settings.seo_og_title === undefined) settings.seo_og_title = '3D Coreqm — 3D Video & WebP Vitrini';
@@ -910,11 +923,20 @@ const Store = {
   },
 
   saveSeo(data) {
+    const cleanStr = (str) => (typeof str === 'string' ? str.replace(/AETHER\s*ONE/gi, '3D Coreqm').replace(/AETHER/gi, '3D Coreqm') : str);
+    
+    // Nereden girilirse girilsin (Site Basligi veya Sirket Adi), birbirine senkronize et
+    const metaTitle = cleanStr(data.meta_title || '').trim();
+    const siteName = cleanStr(data.site_name || '').trim();
+
+    const resolvedTitle = metaTitle || siteName || '3D Coreqm — 3D Video & WebP Frame Vitrini | Otonom Lüks Sistemler';
+    const resolvedSite = siteName || metaTitle || '3D Coreqm — Elite Autonomous Systems';
+
     const update = {
-      seo_meta_title: data.meta_title,
+      seo_meta_title: resolvedTitle,
       seo_meta_description: data.meta_description,
-      seo_keywords: data.keywords,
-      site_title: data.site_name,
+      seo_keywords: cleanStr(data.keywords || ''),
+      site_title: resolvedSite,
       seo_author: data.author,
       site_logo: data.logo_url,
       site_favicon: data.favicon_url,
