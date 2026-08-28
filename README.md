@@ -1,7 +1,7 @@
 # 3D Coreqm — Web Designer & Luxury 3D Canvas Platform
 
 <p align="center">
-  <img src="frames/frame_0001.webp" alt="3D Coreqm Titanium Chrono" width="360" style="border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
+  <img src="frames/frame_0001.webp" alt="3D Coreqm 3D Chrono" width="360" style="border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
 </p>
 
 <p align="center">

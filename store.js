@@ -28,11 +28,15 @@ const Store = {
     try {
       ['aether_settings', 'aether_products', 'aether_iframes', 'aether_nav_menu', 'aether_user'].forEach(k => {
         let raw = localStorage.getItem(k);
-        if (raw && /aether/i.test(raw)) {
+        if (raw && (/aether/i.test(raw) || /elite autonomous/i.test(raw) || /titanium/i.test(raw))) {
           let cleaned = raw
             .replace(/AETHER\s*ONE/gi, '3D Coreqm')
             .replace(/aether-one/gi, '3d-coreqm')
-            .replace(/AETHER/gi, '3D Coreqm');
+            .replace(/AETHER/gi, '3D Coreqm')
+            .replace(/—\s*Elite Autonomous Systems/gi, '')
+            .replace(/Elite Autonomous Systems/gi, '')
+            .replace(/3D Coreqm TITANIUM/gi, '3D Coreqm')
+            .replace(/TITANIUM/gi, '');
           localStorage.setItem(k, cleaned);
         }
       });
@@ -50,17 +54,17 @@ const Store = {
         show_3d_hero: 1,
         ecommerce_enabled: 1,
         hero_title_enabled: 1,
-        hero_tag: 'OTONOM LÜKS SİSTEMLER',
-        hero_title: '3D Coreqm TITANIUM',
+        hero_tag: '360° İNTERAKTİF 3D VİTRİN',
+        hero_title: '3D Coreqm',
         hero_subtitle: 'Mikron hassasiyetinde 240 kare WebP sekansı ve Grade 5 havacılık titanyumu.',
         hero_btn_text: 'Koleksiyonu Keşfet',
         hero_align: 'center',
         hero_valign: 'center',
-        site_title: '3D Coreqm — Elite Autonomous Systems',
+        site_title: '3D Coreqm',
         site_logo: 'frames/frame_0001.webp',
         site_favicon: 'favicon.ico',
         site_apple_touch_icon: 'frames/frame_0001.webp',
-        seo_meta_title: '3D Coreqm — 3D Video & WebP Frame Vitrini | Otonom Lüks Sistemler',
+        seo_meta_title: '3D Coreqm — 3D Video & WebP Vitrini',
         seo_meta_description: 'Grade 5 havacılık titanyumu, 240 kare WebP sekansı ve otonom lüks teknolojinin zirvesi. 360 derece etkileşimli yeni nesil vitrin.',
         seo_keywords: '3d coreqm, 3d canvas, 3d vitrin, titanyum saat, webp frame, e-ticaret, lüks saat',
         seo_author: 'Muhammed Ali Gürdal — BenimPlaka',
@@ -260,7 +264,7 @@ const Store = {
     if (settings.hero_title_enabled === undefined) settings.hero_title_enabled = 1;
     if (settings.hero_align === undefined) settings.hero_align = 'center';
     if (settings.hero_valign === undefined) settings.hero_valign = 'center';
-    if (settings.hero_title === undefined) settings.hero_title = '3D Coreqm TITANIUM';
+    if (settings.hero_title === undefined) settings.hero_title = '3D Coreqm';
     if (settings.hero_subtitle === undefined) settings.hero_subtitle = 'Mikron hassasiyetinde 240 kare Apple WebP sekansı ve Grade 5 havacılık titanyumu.';
     if (settings.hero_tag === undefined) settings.hero_tag = 'OTONOM LÜKS SİSTEMLER';
     if (settings.hero_btn_text === undefined) settings.hero_btn_text = 'Koleksiyonu Keşfet';
@@ -929,8 +933,8 @@ const Store = {
     const metaTitle = cleanStr(data.meta_title || '').trim();
     const siteName = cleanStr(data.site_name || '').trim();
 
-    const resolvedTitle = metaTitle || siteName || '3D Coreqm — 3D Video & WebP Frame Vitrini | Otonom Lüks Sistemler';
-    const resolvedSite = siteName || metaTitle || '3D Coreqm — Elite Autonomous Systems';
+    const resolvedTitle = metaTitle || siteName || '3D Coreqm — 3D Video & WebP Vitrini';
+    const resolvedSite = siteName || metaTitle || '3D Coreqm';
 
     const update = {
       seo_meta_title: resolvedTitle,
